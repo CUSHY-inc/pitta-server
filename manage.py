@@ -3,7 +3,7 @@
 import os
 import sys
 
-# test
+# test1
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pitta_project.settings')
