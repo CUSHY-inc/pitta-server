@@ -146,10 +146,11 @@ class UserId(TemplateView):
                 dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
                 user.updated_at = dt_now
                 user.save()
-                if pre_url is not None and len(pre_url) != 0:
-                    pre_pic = re.search("pictures.*jpg", pre_url)
-                    if(os.path.isfile('/mnt/goofys/{}'.format(pre_pic.group()))):
-                        os.remove('/mnt/goofys/{}'.format(pre_pic.group()))
+                if pre_url is not None:
+                    if len(pre_url) != 0:
+                        pre_pic = re.search("pictures.*jpg", pre_url)
+                        if(os.path.isfile('/mnt/goofys/{}'.format(pre_pic.group()))):
+                            os.remove('/mnt/goofys/{}'.format(pre_pic.group()))
                 json_params = {
                     'code':0x0000,
                     'message':'success',
