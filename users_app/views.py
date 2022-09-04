@@ -64,6 +64,16 @@ class UserId(TemplateView):
             user_identilier = kwargs['parameter']
             if MgtUsersInfo.objects.filter(Q(user_id=user_identilier) | Q(email=user_identilier)).exists():
                 user = MgtUsersInfo.objects.get(Q(user_id=user_identilier) | Q(email=user_identilier))
+                pic_url = ''
+                if user.profile_pic is not None:
+                    if len(user.profile_pic) != 0:
+                        s3_client = boto3.client('s3')
+                        BUCKET = settings.PITTA_ENV
+                        OBJECT = user.profile_pic
+                        pic_url = s3_client.generate_presigned_url(
+                            'get_object',
+                            Params={'Bucket': BUCKET, 'Key': OBJECT},
+                            ExpiresIn=300)
                 json_params = {
                     'user': [
                         {
@@ -75,7 +85,7 @@ class UserId(TemplateView):
                             'height': user.height,
                             'weight': user.weight,
                             'boneType': user.bone_type,
-                            'prifliePic': user.profile_pic,
+                            'prifliePic': pic_url,
                             'introduction': user.introduction,
                             'createdAt': str(user.created_at),
                             'updatedAt': str(user.updated_at)
@@ -124,33 +134,25 @@ class UserId(TemplateView):
                     elif key == "boneType":
                         user.bone_type = value
                     elif key == "profilePic":
-                        pre_url = user.profile_pic
+                        pre_pic = user.profile_pic
                         if len(value) != 0:
                             s = value
                             id = uuid.uuid4()
                             with open('/mnt/goofys/pictures/{}.jpg'.format(id), 'wb') as f:
                                 f.write(base64.b64decode(s))
-                            s3_client = boto3.client('s3')
-                            BUCKET = settings.PITTA_ENV
-                            OBJECT = 'pictures/{}.jpg'.format(id)
-                            url = s3_client.generate_presigned_url(
-                                'get_object',
-                                Params={'Bucket': BUCKET, 'Key': OBJECT},
-                                ExpiresIn=300)
-                            user.profile_pic = url
+                            user.profile_pic = 'pictures/{}.jpg'.format(id)
                         else:
-                            user.profile_pic = url
+                            user.profile_pic = ''
                     elif key == "introduction":
                         user.introduction = value
                 dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
                 dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
                 user.updated_at = dt_now
                 user.save()
-                if pre_url is not None:
-                    if len(pre_url) != 0:
-                        pre_pic = re.search("pictures.*jpg", pre_url)
-                        if(os.path.isfile('/mnt/goofys/{}'.format(pre_pic.group()))):
-                            os.remove('/mnt/goofys/{}'.format(pre_pic.group()))
+                if pre_pic is not None:
+                    if len(pre_pic) != 0:
+                        if(os.path.isfile('/mnt/goofys/{}'.format(pre_pic))):
+                            os.remove('/mnt/goofys/{}'.format(pre_pic))
                 json_params = {
                     'code':0x0000,
                     'message':'success',
