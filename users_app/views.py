@@ -130,7 +130,7 @@ class UserId(TemplateView):
                         else:
                             user.profile_pic = ''
                     elif key == "introduction" and value is not None:
-                        user.introduction = value
+                        user.introduction = value if len(value) != 0 else None
                 dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
                 dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
                 user.updated_at = dt_now
