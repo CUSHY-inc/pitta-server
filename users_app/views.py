@@ -105,21 +105,21 @@ class UserId(TemplateView):
                 user = MgtUsersInfo.objects.get(user_id=user_id)
                 data = json.loads(request.body)
                 for key, value in data.items():
-                    if key == "email":
-                        user.email = value
-                    elif key == "userName":
-                        user.user_name = value
-                    elif key == "genderId":
-                        user.gender_id = value
-                    elif key == "age":
-                        user.age = value
-                    elif key == "height":
-                        user.height = value
-                    elif key == "weight":
-                        user.weight = value
-                    elif key == "boneTypeId":
-                        user.bone_type_id = value
-                    elif key == "profilePic":
+                    if key == "email" and value is not None:
+                        user.email = value if len(value) != 0 else None
+                    elif key == "userName" and value is not None:
+                        user.user_name = value if len(value) != 0 else None
+                    elif key == "genderId" and value is not None:
+                        user.gender_id = value if len(value) != 0 else None
+                    elif key == "age" and value is not None:
+                        user.age = value if len(value) != 0 else None
+                    elif key == "height" and value is not None:
+                        user.height = value if len(value) != 0 else None
+                    elif key == "weight" and value is not None:
+                        user.weight = value if len(value) != 0 else None
+                    elif key == "boneTypeId" and value is not None:
+                        user.bone_type_id = value if len(value) != 0 else None
+                    elif key == "profilePic" and value is not None:
                         pre_pic = user.profile_pic
                         if len(value) != 0:
                             s = value
@@ -129,7 +129,7 @@ class UserId(TemplateView):
                             user.profile_pic = 'pictures/{}.jpg'.format(id)
                         else:
                             user.profile_pic = ''
-                    elif key == "introduction":
+                    elif key == "introduction" and value is not None:
                         user.introduction = value
                 dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
                 dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
@@ -160,7 +160,7 @@ class UserId(TemplateView):
                     "age": user.age,
                     "height": user.height,
                     "weight": user.weight,
-                    "boneTypeId": user.bone_type.bone_type_id,
+                    "boneTypeId": user.bone_type_id,
                     "prifliePic": pic_url,
                     "introduction": user.introduction,
                     "createdAt": str(user.created_at),
