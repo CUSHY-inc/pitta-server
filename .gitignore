@@ -2,3 +2,4 @@ pitta_project/settings.py
 pitta_project/__pycache__/
 users_app/__pycache__/
 users_app/migrations/
+users_app/lib/__pycache__/

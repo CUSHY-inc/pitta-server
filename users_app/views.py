@@ -6,24 +6,24 @@ from django.db.models import Q
 import os
 import datetime
 import json
-import boto3
 import base64
 import uuid
-import re
-import zipfile
+from .libs import lib
 
 # /Users
 class Users(TemplateView):
     # ユーザ一覧取得（作成中）
     def get(self,request):
-        hoge = MgtUsersInfo.objects.get(user_id='test2')
-        json_params = {
-            'message': hoge.gender.gender_id
-        }
-        # status = 200
-        # hoge = settings.PITTA_ENV
-        json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
+        # hoge = MgtUsersInfo.objects.get(user_id='test2')
+        # json_params = {
+        #     'message': hoge.gender.gender_id
+        # }
+        # # status = 200
+        # # hoge = settings.PITTA_ENV
+        # json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
         # return HttpResponse(str(vars(hoge.gender)), status=200) 
+        tmp = "boneTypeId"
+        json_str = lib.conversion_from_camel_to_snake(tmp)
         return HttpResponse(json_str, status=200) 
 
     # ユーザ新規登録
@@ -52,7 +52,7 @@ class Users(TemplateView):
 # /Users/<UserId>
 class UserId(TemplateView):
 
-    # ユーザ情報取得(user_id or email)
+    # ユーザ情報取得
     def get(self, request, **kwargs):
         try:
             user_id = kwargs['parameter']
@@ -61,13 +61,7 @@ class UserId(TemplateView):
                 pic_url = None
                 if user.profile_pic is not None:
                     if len(user.profile_pic) != 0:
-                        s3_client = boto3.client('s3')
-                        BUCKET = settings.PITTA_ENV
-                        OBJECT = user.profile_pic
-                        pic_url = s3_client.generate_presigned_url(
-                            'get_object',
-                            Params={'Bucket': BUCKET, 'Key': OBJECT},
-                            ExpiresIn=300)
+                        pic_url = lib.create_url(user.profile_pic)
                 json_params = {
                     "userId": user.user_id,
                     "email": user.email,
@@ -147,13 +141,7 @@ class UserId(TemplateView):
                 pic_url = None
                 if user.profile_pic is not None:
                     if len(str(user.profile_pic)) != 0:
-                        s3_client = boto3.client('s3')
-                        BUCKET = settings.PITTA_ENV
-                        OBJECT = user.profile_pic
-                        pic_url = s3_client.generate_presigned_url(
-                            'get_object',
-                            Params={'Bucket': BUCKET, 'Key': OBJECT},
-                            ExpiresIn=300)
+                        pic_url = lib.create_url(user.profile_pic)
                 json_params = {
                     "userId": user.user_id,
                     "email": user.email,
