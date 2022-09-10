@@ -58,7 +58,7 @@ class UserId(TemplateView):
             user_id = kwargs['parameter']
             if MgtUsersInfo.objects.filter(user_id=user_id).exists():
                 user = MgtUsersInfo.objects.get(user_id=user_id)
-                pic_url = ''
+                pic_url = None
                 if user.profile_pic is not None:
                     if len(user.profile_pic) != 0:
                         s3_client = boto3.client('s3')
@@ -104,37 +104,39 @@ class UserId(TemplateView):
             if MgtUsersInfo.objects.filter(user_id=user_id).exists():
                 user = MgtUsersInfo.objects.get(user_id=user_id)
                 data = json.loads(request.body)
+                # リクエスト内容を元にユーザ情報を更新する
                 for key, value in data.items():
                     if key == "email" and value is not None:
-                        user.email = value if len(value) != 0 else None
+                        user.email = value if len(str(value)) != 0 else None
                     elif key == "userName" and value is not None:
-                        user.user_name = value if len(value) != 0 else None
+                        user.user_name = value if len(str(value)) != 0 else None
                     elif key == "genderId" and value is not None:
-                        user.gender_id = value if len(value) != 0 else None
+                        user.gender_id = value if len(str(value)) != 0 else None
                     elif key == "age" and value is not None:
-                        user.age = value if len(value) != 0 else None
+                        user.age = value if len(str(value)) != 0 else None
                     elif key == "height" and value is not None:
-                        user.height = value if len(value) != 0 else None
+                        user.height = value if len(str(value)) != 0 else None
                     elif key == "weight" and value is not None:
-                        user.weight = value if len(value) != 0 else None
+                        user.weight = value if len(str(value)) != 0 else None
                     elif key == "boneTypeId" and value is not None:
-                        user.bone_type_id = value if len(value) != 0 else None
+                        user.bone_type_id = value if len(str(value)) != 0 else None
                     elif key == "profilePic" and value is not None:
                         pre_pic = user.profile_pic
-                        if len(value) != 0:
+                        if len(str(value)) != 0:
                             s = value
                             id = uuid.uuid4()
                             with open('/mnt/goofys/pictures/{}.jpg'.format(id), 'wb') as f:
                                 f.write(base64.b64decode(s))
                             user.profile_pic = 'pictures/{}.jpg'.format(id)
                         else:
-                            user.profile_pic = ''
+                            user.profile_pic = None
                     elif key == "introduction" and value is not None:
-                        user.introduction = value if len(value) != 0 else None
+                        user.introduction = value if len(str(value)) != 0 else None
                 dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
                 dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
                 user.updated_at = dt_now
                 user.save()
+                # プロフ写真の更新があれば古い写真は消しておく
                 try:
                     if pre_pic is not None:
                         if len(pre_pic) != 0:
@@ -142,9 +144,9 @@ class UserId(TemplateView):
                                 os.remove('/mnt/goofys/{}'.format(pre_pic))
                 except:
                     pass
-                pic_url = ''
+                pic_url = None
                 if user.profile_pic is not None:
-                    if len(user.profile_pic) != 0:
+                    if len(str(user.profile_pic)) != 0:
                         s3_client = boto3.client('s3')
                         BUCKET = settings.PITTA_ENV
                         OBJECT = user.profile_pic
@@ -161,7 +163,7 @@ class UserId(TemplateView):
                     "height": user.height,
                     "weight": user.weight,
                     "boneTypeId": user.bone_type_id,
-                    "prifliePic": pic_url,
+                    "profliePic": pic_url,
                     "introduction": user.introduction,
                     "createdAt": str(user.created_at),
                     "updatedAt": str(user.updated_at)
