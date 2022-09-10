@@ -3,3 +3,5 @@ pitta_project/__pycache__/
 users_app/__pycache__/
 users_app/migrations/
 users_app/libs/__pycache__/
+masters_app/__pycache__/
+masters_app/migrations/
