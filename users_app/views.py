@@ -65,7 +65,7 @@ class UserId(TemplateView):
                 json_params = {
                     "userId": user.user_id,
                     "email": user.email,
-                    "userName": user.user_name,
+                    "name": user.name,
                     "genderId": user.gender_id,
                     "age": user.age,
                     "height": user.height,
@@ -102,8 +102,8 @@ class UserId(TemplateView):
                 for key, value in data.items():
                     if key == "email" and value is not None:
                         user.email = value if len(str(value)) != 0 else None
-                    elif key == "userName" and value is not None:
-                        user.user_name = value if len(str(value)) != 0 else None
+                    elif key == "name" and value is not None:
+                        user.name = value if len(str(value)) != 0 else None
                     elif key == "genderId" and value is not None:
                         user.gender_id = value if len(str(value)) != 0 else None
                     elif key == "age" and value is not None:
@@ -145,7 +145,7 @@ class UserId(TemplateView):
                 json_params = {
                     "userId": user.user_id,
                     "email": user.email,
-                    "userName": user.user_name,
+                    "name": user.name,
                     "genderId": user.gender_id,
                     "age": user.age,
                     "height": user.height,
