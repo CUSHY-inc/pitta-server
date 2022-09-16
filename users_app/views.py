@@ -31,11 +31,9 @@ class Users(TemplateView):
     def post(self,request):
         try:
             data = json.loads(request.body)
-            user_id = data['userId']
-            email = data['email']
             dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
             dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
-            user = MgtUsersInfo.objects.create(user_id=user_id, email=email, created_at=dt_now, updated_at=dt_now)
+            user = MgtUsersInfo.objects.create(user_id=data['userId'], email=data['email'], created_at=dt_now, updated_at=dt_now)
             json_params = {
                 "userId": user.user_id,
                 "email": user.email
@@ -59,10 +57,6 @@ class UserId(TemplateView):
             user_id = kwargs['parameter']
             if MgtUsersInfo.objects.filter(user_id=user_id).exists():
                 user = MgtUsersInfo.objects.get(user_id=user_id)
-                pic_url = None
-                if user.profile_pic is not None:
-                    if len(user.profile_pic) != 0:
-                        pic_url = lib.create_url(user.profile_pic)
                 json_params = {
                     "userId": user.user_id,
                     "email": user.email,
@@ -72,7 +66,7 @@ class UserId(TemplateView):
                     "height": user.height,
                     "weight": user.weight,
                     "boneTypeId": user.bone_type_id,
-                    "prifliePicUrl": pic_url,
+                    "profliePicUrl": lib.create_url(user.profile_pic),
                     "introduction": user.introduction,
                     "createdAt": str(user.created_at),
                     "updatedAt": str(user.updated_at)
@@ -116,13 +110,10 @@ class UserId(TemplateView):
                     elif key == "boneTypeId" and value is not None:
                         user.bone_type_id = value if len(str(value)) != 0 else None
                     elif key == "profilePic" and value is not None:
-                        pre_pic = user.profile_pic
                         if len(str(value)) != 0:
-                            s = value
-                            id = uuid.uuid4()
-                            with open('/mnt/goofys/pictures/{}.jpg'.format(id), 'wb') as f:
-                                f.write(base64.b64decode(s))
-                            user.profile_pic = 'pictures/{}.jpg'.format(id)
+                            with open('/mnt/goofys/pictures/profile_pics/{}.jpg'.format(user.user_id), 'wb') as f:
+                                f.write(base64.b64decode(value))
+                            user.profile_pic = 'pictures/profile_pics/{}.jpg'.format(user.user_id)
                         else:
                             user.profile_pic = None
                     elif key == "introduction" and value is not None:
@@ -131,18 +122,6 @@ class UserId(TemplateView):
                 dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
                 user.updated_at = dt_now
                 user.save()
-                # プロフ写真の更新があれば古い写真は消しておく
-                try:
-                    if pre_pic is not None:
-                        if len(pre_pic) != 0:
-                            if(os.path.isfile('/mnt/goofys/{}'.format(pre_pic))):
-                                os.remove('/mnt/goofys/{}'.format(pre_pic))
-                except:
-                    pass
-                pic_url = None
-                if user.profile_pic is not None:
-                    if len(str(user.profile_pic)) != 0:
-                        pic_url = lib.create_url(user.profile_pic)
                 json_params = {
                     "userId": user.user_id,
                     "email": user.email,
@@ -152,7 +131,7 @@ class UserId(TemplateView):
                     "height": user.height,
                     "weight": user.weight,
                     "boneTypeId": user.bone_type_id,
-                    "profliePicUrl": pic_url,
+                    "profliePicUrl": lib.create_url(user.profile_pic),
                     "introduction": user.introduction,
                     "createdAt": str(user.created_at),
                     "updatedAt": str(user.updated_at)
