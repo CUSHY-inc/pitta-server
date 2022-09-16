@@ -8,6 +8,7 @@ import datetime
 import json
 import base64
 import uuid
+import traceback
 from .libs import lib
 
 # /Users
@@ -40,9 +41,9 @@ class Users(TemplateView):
                 "email": user.email
             }
             status = 200
-        except Exception as e:
+        except:
             json_params = {
-                "message": str(e),
+                "message": traceback.format_exc()
             }
             status = 400
         finally:
@@ -82,9 +83,9 @@ class UserId(TemplateView):
                     "message": "user not exist",
                 }
                 status = 404
-        except Exception as e:
+        except:
             json_params = {
-                "message": str(e)
+                "message": traceback.format_exc()
             }
             status = 400
         finally:
@@ -162,9 +163,9 @@ class UserId(TemplateView):
                     "message": "user not exist"
                 }
                 status = 404
-        except Exception as e:
+        except:
             json_params = {
-                "message": str(e),
+                "message": traceback.format_exc()
             }
             status = 400
         finally:
@@ -184,9 +185,9 @@ class UserId(TemplateView):
                     "message": "user not exist"
                 }
                 status = 404
-        except Exception as e:
+        except:
             json_params = {
-                "message": str(e),
+                "message": traceback.format_exc()
             }
             status = 400
         finally:

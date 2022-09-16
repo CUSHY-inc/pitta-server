@@ -2,6 +2,7 @@ from django.views.generic import TemplateView
 from django.http import HttpResponse
 from .models import MgtGenderList, MgtBoneTypeList
 import json
+import traceback
 
 # /masters/genderList
 class genderList(TemplateView):
@@ -16,9 +17,9 @@ class genderList(TemplateView):
                 json_params[i]['gender'] = item.gender
                 i += 1
             status = 200
-        except Exception as e:
+        except:
             json_params = {
-                "message": str(e)
+                "message": traceback.format_exc()
             }
             status = 400
         finally:
@@ -38,9 +39,9 @@ class boneTypeList(TemplateView):
                 json_params[i]['bone_type'] = item.bone_type
                 i += 1
             status = 200
-        except Exception as e:
+        except:
             json_params = {
-                "message": str(e)
+                "message": traceback.format_exc()
             }
             status = 400
         finally:
