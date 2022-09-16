@@ -5,3 +5,6 @@ users_app/migrations/
 users_app/libs/__pycache__/
 masters_app/__pycache__/
 masters_app/migrations/
+posts_app/__pycache__/
+posts_app/migrations/
+posts_app/libs/__pycache__/
