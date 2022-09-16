@@ -13,7 +13,7 @@ class MgtPostsInfo(models.Model):
     thumbnail = models.TextField()
     sample_image = models.TextField(blank=True, null=True)
     page_url = models.TextField(blank=True, null=True)
-    user_id = models.CharField(max_length=255)
+    user = models.ForeignKey('MgtUsersInfo', models.DO_NOTHING)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
 
