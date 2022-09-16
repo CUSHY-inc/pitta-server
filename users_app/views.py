@@ -71,7 +71,7 @@ class UserId(TemplateView):
                     "height": user.height,
                     "weight": user.weight,
                     "boneTypeId": user.bone_type_id,
-                    "prifliePic": pic_url,
+                    "prifliePicUrl": pic_url,
                     "introduction": user.introduction,
                     "createdAt": str(user.created_at),
                     "updatedAt": str(user.updated_at)
@@ -151,7 +151,7 @@ class UserId(TemplateView):
                     "height": user.height,
                     "weight": user.weight,
                     "boneTypeId": user.bone_type_id,
-                    "profliePic": pic_url,
+                    "profliePicUrl": pic_url,
                     "introduction": user.introduction,
                     "createdAt": str(user.created_at),
                     "updatedAt": str(user.updated_at)
