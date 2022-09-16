@@ -47,7 +47,7 @@ class Posts(TemplateView):
                         "height": user.height,
                         "weight": user.weight,
                         "boneTypeId": user.bone_type_id,
-                        "prifliePicUrl": lib.create_url(user.profile_pic),
+                        "profliePicUrl": lib.create_url(user.profile_pic),
                         "introduction": user.introduction,
                         "createdAt": str(user.created_at),
                         "updatedAt": str(user.updated_at)
@@ -77,19 +77,19 @@ class Posts(TemplateView):
             if data['video'] is not None:
                 with open('/mnt/goofys/videos/post{}.mp4'.format(post_id), 'wb') as f:
                     f.write(base64.b64decode(data['video']))
-                video = 'videos/post/{}.mp4'.format(post_id)
+                video = 'videos/{}.mp4'.format(post_id)
             else:
                 video = None
             if data['thumbnail'] is not None:
-                with open('/mnt/goofys/pictures/thumbnail/{}.jpg'.format(post_id), 'wb') as f:
+                with open('/mnt/goofys/pictures/thumbnails/{}.jpg'.format(post_id), 'wb') as f:
                     f.write(base64.b64decode(data['thumbnail']))
-                thumbnail = 'pictures/thumbnail/{}.jpg'.format(post_id)
+                thumbnail = 'pictures/thumbnails/{}.jpg'.format(post_id)
             else:
                 thumbnail = None
             if data['sampleImage'] is not None:
-                with open('/mnt/goofys/pictures/sample_image/{}.jpg'.format(post_id), 'wb') as f:
+                with open('/mnt/goofys/pictures/sample_images/{}.jpg'.format(post_id), 'wb') as f:
                     f.write(base64.b64decode(data['sampleImage']))
-                sample_image = 'pictures/sample_image/{}.jpg'.format(post_id)
+                sample_image = 'pictures/sample_images/{}.jpg'.format(post_id)
             else:
                 sample_image = None
             
@@ -119,7 +119,7 @@ class Posts(TemplateView):
                     "height": user.height,
                     "weight": user.weight,
                     "boneTypeId": user.bone_type_id,
-                    "prifliePicUrl": lib.create_url(user.profile_pic),
+                    "profliePicUrl": lib.create_url(user.profile_pic),
                     "introduction": user.introduction,
                     "createdAt": str(user.created_at),
                     "updatedAt": str(user.updated_at)
@@ -169,7 +169,7 @@ class PostId(TemplateView):
                         "height": user.height,
                         "weight": user.weight,
                         "boneTypeId": user.bone_type_id,
-                        "prifliePicUrl": lib.create_url(user.profile_pic),
+                        "profliePicUrl": lib.create_url(user.profile_pic),
                         "introduction": user.introduction,
                         "createdAt": str(user.created_at),
                         "updatedAt": str(user.updated_at)
