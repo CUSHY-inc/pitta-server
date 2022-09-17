@@ -220,12 +220,19 @@ class Likes(TemplateView):
         try:
             post_id = kwargs['parameter']
             if MgtPostsInfo.objects.filter(post_id=post_id).exists():
+                user_id = request.GET.get('userId')
                 if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
                     offset = int(request.GET.get('offset'))
                     limit = offset + int(request.GET.get('limit'))
-                    likes = MgtLikesInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[offset:limit]
+                    if user_id is None:
+                        likes = MgtLikesInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[offset:limit]
+                    else:
+                        likes = MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()[offset:limit]
                 else:
-                    likes = MgtLikesInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()
+                    if user_id is None:
+                        likes = MgtLikesInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()
+                    else:
+                        likes = MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()
                 json_params = {}
                 json_params['likes'] = []
                 for like in likes:
@@ -257,18 +264,23 @@ class Likes(TemplateView):
     def post(self, request, **kwargs):
         try:
             post_id = kwargs['parameter']
-            if MgtPostsInfo.objects.filter(post_id=post_id).exists():
-                user_id = request.POST.get('userId')
+            user_id = request.POST.get('userId')
+            if not MgtPostsInfo.objects.filter(post_id=post_id).exists():
+                json_params = {
+                    "message": "post not exist"
+                }
+                status = 404
+            elif not MgtUsersInfo.objects.filter(user_id=user_id).exists():
+                json_params = {
+                    "message": "user not exist"
+                }
+                status = 404
+            else:
                 if not MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).exists():
                     dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
                     dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
                     MgtLikesInfo.objects.create(user_id=user_id, post_id=post_id, created_at=dt_now, updated_at=dt_now)
                 status = 204
-            else:
-                json_params = {
-                    "message": "post not exist"
-                }
-                status = 404
         except:
             json_params = {
                 "message": traceback.format_exc()
@@ -285,17 +297,22 @@ class Likes(TemplateView):
     def delete(self, request, **kwargs):
         try:
             post_id = kwargs['parameter']
-            if MgtPostsInfo.objects.filter(post_id=post_id).exists():
-                user_id = QueryDict(request.body).get('userId')
-                if MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).exists():
-                    like = MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id))
-                    like.delete()
-                status = 204
-            else:
+            user_id = QueryDict(request.body).get('userId')
+            if not MgtPostsInfo.objects.filter(post_id=post_id).exists():
                 json_params = {
                     "message": "post not exist"
                 }
                 status = 404
+            elif not MgtUsersInfo.objects.filter(user_id=user_id).exists():
+                json_params = {
+                    "message": "user not exist"
+                }
+                status = 404
+            else:
+                if MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).exists():
+                    like = MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id))
+                    like.delete()
+                status = 204
         except:
             json_params = {
                 "message": traceback.format_exc()
