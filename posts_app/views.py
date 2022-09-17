@@ -9,7 +9,7 @@ import uuid
 import traceback
 from .libs import lib
 
-# /Posts
+# /posts
 class Posts(TemplateView):
 
     # 投稿一覧取得
@@ -137,7 +137,7 @@ class Posts(TemplateView):
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
             return HttpResponse(json_str, status=status)
 
-# /PostId
+# /posts/postId
 class PostId(TemplateView):
 
     # 投稿ID指定取得

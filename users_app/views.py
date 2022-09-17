@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 from django.http import HttpResponse
-from .models import MgtUsersInfo
+from .models import MgtUsersInfo, MgtPostsInfo
 from django.conf import settings
 from django.db.models import Q
 import os
@@ -11,7 +11,7 @@ import uuid
 import traceback
 from .libs import lib
 
-# /Users
+# /users
 class Users(TemplateView):
     # ユーザ一覧取得（作成中）
     def get(self,request):
@@ -48,7 +48,7 @@ class Users(TemplateView):
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
             return HttpResponse(json_str, status=status)
 
-# /Users/<UserId>
+# /users/<userId>
 class UserId(TemplateView):
 
     # ユーザ情報取得
@@ -93,6 +93,7 @@ class UserId(TemplateView):
             if MgtUsersInfo.objects.filter(user_id=user_id).exists():
                 user = MgtUsersInfo.objects.get(user_id=user_id)
                 data = json.loads(request.body)
+
                 # リクエスト内容を元にユーザ情報を更新する
                 for key, value in data.items():
                     if key == "email" and value is not None:
@@ -118,6 +119,7 @@ class UserId(TemplateView):
                             user.profile_pic = None
                     elif key == "introduction" and value is not None:
                         user.introduction = value if len(str(value)) != 0 else None
+                
                 dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
                 dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
                 user.updated_at = dt_now
@@ -175,3 +177,68 @@ class UserId(TemplateView):
             else:
                 json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
                 return HttpResponse(json_str, status=status)
+
+# /users/<userId>/posts
+class UserIdPosts(TemplateView):
+
+    # ユーザ投稿動画取得
+    def get(self, request, **kwargs):
+        try:
+            user_id = kwargs['parameter']
+            if MgtUsersInfo.objects.filter(user_id=user_id).exists():
+                user = MgtUsersInfo.objects.get(user_id=user_id)
+                if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
+                    offset = int(request.GET.get('offset'))
+                    limit = offset + int(request.GET.get('limit'))
+                    posts = MgtPostsInfo.objects.filter(user_id=user_id).order_by('created_at').reverse()[offset:limit]
+                else:
+                    posts = MgtPostsInfo.objects.filter(user_id=user_id).order_by('created_at').reverse()
+                json_params = {}
+                json_params['posts'] = []
+                for post in posts:
+                    json_param = {
+                        "postId": str(post.post_id),
+                        "itemId": post.item_id,
+                        "itemName": post.item_name,
+                        "sizeId": post.size_id,
+                        "colorId": post.color_id,
+                        "categoryId": post.category_id,
+                        "description": post.description,
+                        "brandId": post.brand_id,
+                        "videoUrl": lib.create_url(post.video),
+                        "thumbnailUrl": lib.create_url(post.thumbnail),
+                        "sampleImageUrl": lib.create_url(post.sample_image),
+                        "pageUrl": post.page_url,
+                        "user": {
+                            "userId": user.user_id,
+                            "email": user.email,
+                            "name": user.name,
+                            "genderId": user.gender_id,
+                            "age": user.age,
+                            "height": user.height,
+                            "weight": user.weight,
+                            "boneTypeId": user.bone_type_id,
+                            "profliePicUrl": lib.create_url(user.profile_pic),
+                            "introduction": user.introduction,
+                            "createdAt": str(user.created_at),
+                            "updatedAt": str(user.updated_at)
+                        },
+                        "createdAt": str(post.created_at),
+                        "updatedAt": str(post.updated_at)
+                    }
+                    json_params['posts'].append(json_param)
+                json_params['total'] = len(json_params['posts'])
+                status = 200
+            else:
+                json_params = {
+                    "message": "user not exist",
+                }
+                status = 404
+        except:
+            json_params = {
+                "message": traceback.format_exc()
+            }
+            status = 400
+        finally:
+            json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
+            return HttpResponse(json_str, status=status)
