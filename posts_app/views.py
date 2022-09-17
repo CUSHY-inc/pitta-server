@@ -1,9 +1,7 @@
 from django.views.generic import TemplateView
 from django.http import HttpResponse
 from .models import MgtPostsInfo, MgtUsersInfo, MgtLikesInfo, MgtCommentsInfo
-from django.conf import settings
 from django.db.models import Q
-from django.http import QueryDict
 import datetime
 import json
 import uuid
@@ -264,7 +262,7 @@ class Likes(TemplateView):
     def post(self, request, **kwargs):
         try:
             post_id = kwargs['parameter']
-            user_id = request.POST.get('userId')
+            user_id = request.GET.get('userId')
             if not MgtPostsInfo.objects.filter(post_id=post_id).exists():
                 json_params = {
                     "message": "post not exist"
@@ -297,7 +295,7 @@ class Likes(TemplateView):
     def delete(self, request, **kwargs):
         try:
             post_id = kwargs['parameter']
-            user_id = QueryDict(request.body).get('userId')
+            user_id = request.GET.get('userId')
             if not MgtPostsInfo.objects.filter(post_id=post_id).exists():
                 json_params = {
                     "message": "post not exist"
