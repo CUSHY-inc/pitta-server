@@ -5,7 +5,7 @@ import json
 import traceback
 
 # /masters/genderList
-class genderList(TemplateView):
+class GenderList(TemplateView):
     def get(self,request):
         try:
             gender_list = MgtGenderList.objects.all().order_by('gender_id')
@@ -27,7 +27,7 @@ class genderList(TemplateView):
             return HttpResponse(json_str, status=status)
 
 # /masters/boneTypeList
-class boneTypeList(TemplateView):
+class BoneTypeList(TemplateView):
     def get(self,request):
         try:
             bone_type_list = MgtBoneTypeList.objects.all().order_by('bone_type_id')
@@ -49,7 +49,7 @@ class boneTypeList(TemplateView):
             return HttpResponse(json_str, status=status)
 
 # /masters/sizeList
-class sizeList(TemplateView):
+class SizeList(TemplateView):
     def get(self,request):
         try:
             size_list = MgtSizeList.objects.all().order_by('size_id')
@@ -71,7 +71,7 @@ class sizeList(TemplateView):
             return HttpResponse(json_str, status=status)
 
 # /masters/colorList
-class colorList(TemplateView):
+class ColorList(TemplateView):
     def get(self,request):
         try:
             color_list = MgtColorList.objects.all().order_by('color_id')
@@ -93,7 +93,7 @@ class colorList(TemplateView):
             return HttpResponse(json_str, status=status)
 
 # /masters/categoryList
-class categoryList(TemplateView):
+class CategoryList(TemplateView):
     def get(self,request):
         try:
             category_list = MgtCategoryList.objects.all().order_by('category_id')
@@ -115,7 +115,7 @@ class categoryList(TemplateView):
             return HttpResponse(json_str, status=status)
 
 # /masters/brandList
-class brandList(TemplateView):
+class BrandList(TemplateView):
     def get(self,request):
         try:
             brand_list = MgtBrandList.objects.all().order_by('brand_id')
