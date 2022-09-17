@@ -110,7 +110,7 @@ class UserId(TemplateView):
                         user.bone_type_id = value if len(str(value)) != 0 else None
                     elif key == "profilePic" and value is not None:
                         if len(str(value)) != 0:
-                            user.profile_pic = lib.decode_and_save(value, '/mnt/goofys/pictures/profile_pics', user.user_id)
+                            user.profile_pic = lib.decode_and_storage(value, 'pictures/profile_pics', user.user_id)
                         else:
                             user.profile_pic = None
                     elif key == "introduction" and value is not None:

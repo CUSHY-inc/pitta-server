@@ -4,7 +4,6 @@ from .models import MgtPostsInfo, MgtUsersInfo
 from django.conf import settings
 import datetime
 import json
-import base64
 import uuid
 import traceback
 from .libs import lib
@@ -73,23 +72,17 @@ class Posts(TemplateView):
             data = json.loads(request.body)
             post_id = uuid.uuid4()
 
-            # base64で送られてきたプロパティをデコードしてS3に格納
+            # base64で送られてきたデータをデコードしてS3に格納
             if data['video'] is not None:
-                with open('/mnt/goofys/videos/post{}.mp4'.format(post_id), 'wb') as f:
-                    f.write(base64.b64decode(data['video']))
-                video = 'videos/{}.mp4'.format(post_id)
+                video = lib.decode_and_storage(data['video'], 'videos/posts', post_id)
             else:
                 video = None
             if data['thumbnail'] is not None:
-                with open('/mnt/goofys/pictures/thumbnails/{}.jpg'.format(post_id), 'wb') as f:
-                    f.write(base64.b64decode(data['thumbnail']))
-                thumbnail = 'pictures/thumbnails/{}.jpg'.format(post_id)
+                thumbnail = lib.decode_and_storage(data['thumbnail'], 'pictures/thumbnails', post_id)
             else:
                 thumbnail = None
             if data['sampleImage'] is not None:
-                with open('/mnt/goofys/pictures/sample_images/{}.jpg'.format(post_id), 'wb') as f:
-                    f.write(base64.b64decode(data['sampleImage']))
-                sample_image = 'pictures/sample_images/{}.jpg'.format(post_id)
+                sample_image = lib.decode_and_storage(data['sampleImage'], 'pictures/sample_images', post_id)
             else:
                 sample_image = None
             

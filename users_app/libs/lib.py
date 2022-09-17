@@ -27,7 +27,7 @@ def conversion_from_camel_to_snake(str):
     return re.sub("([A-Z])",lambda x:"_" + x.group(1).lower(),str)
 
 # Base64のファイルをデコードして指定のS3フォルダに格納
-def decode_and_save(file_data, path, file_name):
+def decode_and_storage(file_data, path, file_name):
     file = base64.b64decode(file_data)
     file_type = magic.from_buffer(file, mime=True)
     extension = re.findall('^.*/(.*)$', file_type)[0]
