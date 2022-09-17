@@ -22,5 +22,5 @@ urlpatterns = [
     path('masters/', include('masters_app.urls')),
     path('users/', include('users_app.urls')),
     path('posts/', include('posts_app.urls')),
-    path('default/', Default.as_view()),
+    path('health/', Default.as_view()),
 ]
