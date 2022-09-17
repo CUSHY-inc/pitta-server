@@ -6,8 +6,6 @@ from django.db.models import Q
 import os
 import datetime
 import json
-import base64
-import uuid
 import traceback
 from .libs import lib
 
@@ -112,9 +110,7 @@ class UserId(TemplateView):
                         user.bone_type_id = value if len(str(value)) != 0 else None
                     elif key == "profilePic" and value is not None:
                         if len(str(value)) != 0:
-                            with open('/mnt/goofys/pictures/profile_pics/{}.jpg'.format(user.user_id), 'wb') as f:
-                                f.write(base64.b64decode(value))
-                            user.profile_pic = 'pictures/profile_pics/{}.jpg'.format(user.user_id)
+                            user.profile_pic = lib.decode_and_save(value, '/mnt/goofys/pictures/profile_pics', user.user_id)
                         else:
                             user.profile_pic = None
                     elif key == "introduction" and value is not None:
