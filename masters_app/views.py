@@ -10,12 +10,14 @@ class GenderList(TemplateView):
         try:
             gender_list = MgtGenderList.objects.all().order_by('gender_id')
             json_params = {}
-            i = 0
+            json_params['list'] = []
             for item in gender_list:
-                json_params[i] = {}
-                json_params[i]['gender_id'] = item.gender_id
-                json_params[i]['gender'] = item.gender
-                i += 1
+                json_param = {
+                    "genderId": item.gender_id,
+                    "gender": item.gender
+                }
+                json_params['list'].append(json_param)
+            json_params['total'] = len(json_params['list'])
             status = 200
         except:
             json_params = {
@@ -32,12 +34,14 @@ class BoneTypeList(TemplateView):
         try:
             bone_type_list = MgtBoneTypeList.objects.all().order_by('bone_type_id')
             json_params = {}
-            i = 0
+            json_params['list'] = []
             for item in bone_type_list:
-                json_params[i] = {}
-                json_params[i]['bone_type_id'] = item.bone_type_id
-                json_params[i]['bone_type'] = item.bone_type
-                i += 1
+                json_param = {
+                    "boneTypeId": item.bone_type_id,
+                    "boneType": item.bone_type
+                }
+                json_params['list'].append(json_param)
+            json_params['total'] = len(json_params['list'])
             status = 200
         except:
             json_params = {
@@ -54,12 +58,14 @@ class SizeList(TemplateView):
         try:
             size_list = MgtSizeList.objects.all().order_by('size_id')
             json_params = {}
-            i = 0
+            json_params['list'] = []
             for item in size_list:
-                json_params[i] = {}
-                json_params[i]['size_id'] = item.size_id
-                json_params[i]['size'] = item.size
-                i += 1
+                json_param = {
+                    "sizeId": item.size_id,
+                    "size": item.size
+                }
+                json_params['list'].append(json_param)
+            json_params['total'] = len(json_params['list'])
             status = 200
         except:
             json_params = {
@@ -76,12 +82,14 @@ class ColorList(TemplateView):
         try:
             color_list = MgtColorList.objects.all().order_by('color_id')
             json_params = {}
-            i = 0
+            json_params['list'] = []
             for item in color_list:
-                json_params[i] = {}
-                json_params[i]['color_id'] = item.color_id
-                json_params[i]['color'] = item.color
-                i += 1
+                json_param = {
+                    "colorId": item.color_id,
+                    "color": item.color
+                }
+                json_params['list'].append(json_param)
+            json_params['total'] = len(json_params['list'])
             status = 200
         except:
             json_params = {
@@ -98,12 +106,14 @@ class CategoryList(TemplateView):
         try:
             category_list = MgtCategoryList.objects.all().order_by('category_id')
             json_params = {}
-            i = 0
+            json_params['list'] = []
             for item in category_list:
-                json_params[i] = {}
-                json_params[i]['category_id'] = item.category_id
-                json_params[i]['category'] = item.category
-                i += 1
+                json_param = {
+                    "categoryId": item.category_id,
+                    "category": item.category
+                }
+                json_params['list'].append(json_param)
+            json_params['total'] = len(json_params['list'])
             status = 200
         except:
             json_params = {
@@ -120,12 +130,14 @@ class BrandList(TemplateView):
         try:
             brand_list = MgtBrandList.objects.all().order_by('brand_id')
             json_params = {}
-            i = 0
+            json_params['list'] = []
             for item in brand_list:
-                json_params[i] = {}
-                json_params[i]['brand_id'] = item.brand_id
-                json_params[i]['brand'] = item.brand
-                i += 1
+                json_param = {
+                    "brandId": item.brand_id,
+                    "brand": item.brand
+                }
+                json_params['list'].append(json_param)
+            json_params['total'] = len(json_params['list'])
             status = 200
         except:
             json_params = {
