@@ -4,7 +4,7 @@ import re
 import base64
 import magic
 
-# コンテンツDL用 URL作成
+# S3 DL用 URL作成
 def create_url(path):
     if path is not None:
         if len(str(path)) != 0:

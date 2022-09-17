@@ -86,3 +86,13 @@ class MgtBoneTypeList(models.Model):
     class Meta:
         managed = False
         db_table = 'mgt_bone_type_list'
+
+class MgtLikesInfo(models.Model):
+    user = models.ForeignKey('MgtUsersInfo', models.DO_NOTHING)
+    post = models.ForeignKey('MgtPostsInfo', models.DO_NOTHING)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'mgt_likes_info'

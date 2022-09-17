@@ -1,7 +1,9 @@
 from django.views.generic import TemplateView
 from django.http import HttpResponse
-from .models import MgtPostsInfo, MgtUsersInfo
+from .models import MgtPostsInfo, MgtUsersInfo, MgtLikesInfo
 from django.conf import settings
+from django.db.models import Q
+from django.http import QueryDict
 import datetime
 import json
 import uuid
@@ -192,6 +194,102 @@ class PostId(TemplateView):
             if MgtPostsInfo.objects.filter(post_id=post_id).exists():
                 post = MgtPostsInfo.objects.get(post_id=post_id)
                 post.delete()
+                status = 204
+            else:
+                json_params = {
+                    "message": "post not exist"
+                }
+                status = 404
+        except:
+            json_params = {
+                "message": traceback.format_exc()
+            }
+            status = 400
+        finally:
+            if status == 204:
+                return HttpResponse(status=status)
+            else:
+                json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
+                return HttpResponse(json_str, status=status)
+
+# /posts/postId/likes
+class Likes(TemplateView):
+
+    # いいね一覧取得
+    def get(self, request, **kwargs):
+        try:
+            post_id = kwargs['parameter']
+            if MgtPostsInfo.objects.filter(post_id=post_id).exists():
+                if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
+                    offset = int(request.GET.get('offset'))
+                    limit = offset + int(request.GET.get('limit'))
+                    likes = MgtLikesInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[offset:limit]
+                else:
+                    likes = MgtLikesInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()
+                json_params = {}
+                json_params['likes'] = []
+                for like in likes:
+                    json_param = {
+                        "id": str(like.id),
+                        "userId": like.user_id,
+                        "postId": like.post_id,
+                        "createdAt": str(like.created_at),
+                        "updatedAt": str(like.updated_at)
+                    }
+                    json_params['likes'].append(json_param)
+                json_params['total'] = len(json_params['likes'])
+                status = 200
+            else:
+                json_params = {
+                    "message": "post not exist"
+                }
+                status = 404
+        except:
+            json_params = {
+                "message": traceback.format_exc()
+            }
+            status = 400
+        finally:
+            json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
+            return HttpResponse(json_str, status=status)
+
+    # いいね登録
+    def post(self, request, **kwargs):
+        try:
+            post_id = kwargs['parameter']
+            if MgtPostsInfo.objects.filter(post_id=post_id).exists():
+                user_id = request.POST.get('userId')
+                if not MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).exists():
+                    dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+                    dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
+                    MgtLikesInfo.objects.create(user_id=user_id, post_id=post_id, created_at=dt_now, updated_at=dt_now)
+                status = 204
+            else:
+                json_params = {
+                    "message": "post not exist"
+                }
+                status = 404
+        except:
+            json_params = {
+                "message": traceback.format_exc()
+            }
+            status = 400
+        finally:
+            if status == 204:
+                return HttpResponse(status=status)
+            else:
+                json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
+                return HttpResponse(json_str, status=status)
+
+    # いいね削除
+    def delete(self, request, **kwargs):
+        try:
+            post_id = kwargs['parameter']
+            if MgtPostsInfo.objects.filter(post_id=post_id).exists():
+                user_id = QueryDict(request.body).get('userId')
+                if MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).exists():
+                    like = MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id))
+                    like.delete()
                 status = 204
             else:
                 json_params = {
