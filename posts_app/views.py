@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 from django.http import HttpResponse
-from .models import MgtPostsInfo, MgtUsersInfo, MgtLikesInfo
+from .models import MgtPostsInfo, MgtUsersInfo, MgtLikesInfo, MgtCommentsInfo
 from django.conf import settings
 from django.db.models import Q
 from django.http import QueryDict
@@ -312,6 +312,115 @@ class Likes(TemplateView):
                 if MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).exists():
                     like = MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id))
                     like.delete()
+                status = 204
+        except:
+            json_params = {
+                "message": traceback.format_exc()
+            }
+            status = 400
+        finally:
+            if status == 204:
+                return HttpResponse(status=status)
+            else:
+                json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
+                return HttpResponse(json_str, status=status)
+
+# /posts/postId/comments
+class Comments(TemplateView):
+
+    # コメント取得
+    def get(self, request, **kwargs):
+        try:
+            post_id = kwargs['parameter']
+            if not MgtPostsInfo.objects.filter(post_id=post_id).exists():
+                json_params = {
+                    "message": "post not exist"
+                }
+                status = 404
+            else:
+                user_id = request.GET.get('userId')
+                if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
+                    offset = int(request.GET.get('offset'))
+                    limit = offset + int(request.GET.get('limit'))
+                    if user_id is None:
+                        comments = MgtCommentsInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[offset:limit]
+                    else:
+                        comments = MgtCommentsInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()[offset:limit]
+                else:
+                    if user_id is None:
+                        comments = MgtCommentsInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()
+                    else:
+                        comments = MgtCommentsInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()
+                json_params = {}
+                json_params['comments'] = []
+                for comment in comments:
+                    json_param = {
+                        "id": str(comment.id),
+                        "userId": comment.user_id,
+                        "postId": comment.post_id,
+                        "comment": comment.comment,
+                        "createdAt": str(comment.created_at),
+                        "updatedAt": str(comment.updated_at)
+                    }
+                    json_params['comments'].append(json_param)
+                json_params['total'] = len(json_params['comments'])
+                status = 200
+        except:
+            json_params = {
+                "message": traceback.format_exc()
+            }
+            status = 400
+        finally:
+            json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
+            return HttpResponse(json_str, status=status)
+
+    # コメント登録
+    def post(self, request, **kwargs):
+        try:
+            post_id = kwargs['parameter']
+            user_id = request.GET.get('userId')
+            data = json.loads(request.body)
+            comment = data['comment']
+            if not MgtPostsInfo.objects.filter(post_id=post_id).exists():
+                json_params = {
+                    "message": "post not exist"
+                }
+                status = 404
+            elif not MgtUsersInfo.objects.filter(user_id=user_id).exists():
+                json_params = {
+                    "message": "user not exist"
+                }
+                status = 404
+            else:
+                dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+                dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
+                MgtCommentsInfo.objects.create(user_id=user_id, post_id=post_id, comment=comment, created_at=dt_now, updated_at=dt_now)
+                status = 204
+        except:
+            json_params = {
+                "message": traceback.format_exc()
+            }
+            status = 400
+        finally:
+            if status == 204:
+                return HttpResponse(status=status)
+            else:
+                json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
+                return HttpResponse(json_str, status=status)
+
+    # コメント削除
+    def delete(self, request, **kwargs):
+        try:
+            post_id = kwargs['parameter']
+            user_id = request.GET.get('userId')
+            if not MgtPostsInfo.objects.filter(post_id=post_id).exists():
+                json_params = {
+                    "message": "post not exist"
+                }
+                status = 404
+            else:
+                comment = MgtCommentsInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id))
+                comment.delete()
                 status = 204
         except:
             json_params = {
