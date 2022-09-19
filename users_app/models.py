@@ -86,3 +86,14 @@ class MgtBrandList(models.Model):
     class Meta:
         managed = False
         db_table = 'mgt_brand_list'
+
+class MgtTemplatesInfo(models.Model):
+    template_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('MgtUsersInfo', models.DO_NOTHING)
+    template = models.TextField()
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'mgt_templates_info'
