@@ -223,7 +223,6 @@ class UserIdPosts(TemplateView):
                         "updatedAt": str(post.updated_at)
                     }
                     json_params['posts'].append(json_param)
-                json_params['total'] = len(json_params['posts'])
                 status = 200
             else:
                 json_params = {
@@ -265,7 +264,6 @@ class UserIdTemplates(TemplateView):
                         "updatedAt": str(template.updated_at)
                     }
                     json_params['templates'].append(json_param)
-                json_params['total'] = len(json_params['templates'])
                 status = 200
             else:
                 json_params = {

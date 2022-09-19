@@ -55,7 +55,6 @@ class Posts(TemplateView):
                     "updatedAt": str(post.updated_at)
                 }
                 json_params['posts'].append(json_param)
-            json_params['total'] = len(json_params['posts'])
             status = 200
         except:
             json_params = {
@@ -242,7 +241,6 @@ class Likes(TemplateView):
                         "updatedAt": str(like.updated_at)
                     }
                     json_params['likes'].append(json_param)
-                json_params['total'] = len(json_params['likes'])
                 status = 200
             else:
                 json_params = {
@@ -361,7 +359,6 @@ class Comments(TemplateView):
                         "updatedAt": str(comment.updated_at)
                     }
                     json_params['comments'].append(json_param)
-                json_params['total'] = len(json_params['comments'])
                 status = 200
         except:
             json_params = {

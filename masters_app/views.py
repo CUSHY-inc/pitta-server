@@ -17,7 +17,6 @@ class GenderList(TemplateView):
                     "gender": item.gender
                 }
                 json_params['list'].append(json_param)
-            json_params['total'] = len(json_params['list'])
             status = 200
         except:
             json_params = {
@@ -41,7 +40,6 @@ class BoneTypeList(TemplateView):
                     "boneType": item.bone_type
                 }
                 json_params['list'].append(json_param)
-            json_params['total'] = len(json_params['list'])
             status = 200
         except:
             json_params = {
@@ -65,7 +63,6 @@ class SizeList(TemplateView):
                     "size": item.size
                 }
                 json_params['list'].append(json_param)
-            json_params['total'] = len(json_params['list'])
             status = 200
         except:
             json_params = {
@@ -89,7 +86,6 @@ class ColorList(TemplateView):
                     "color": item.color
                 }
                 json_params['list'].append(json_param)
-            json_params['total'] = len(json_params['list'])
             status = 200
         except:
             json_params = {
@@ -113,7 +109,6 @@ class CategoryList(TemplateView):
                     "category": item.category
                 }
                 json_params['list'].append(json_param)
-            json_params['total'] = len(json_params['list'])
             status = 200
         except:
             json_params = {
@@ -137,7 +132,6 @@ class BrandList(TemplateView):
                     "brand": item.brand
                 }
                 json_params['list'].append(json_param)
-            json_params['total'] = len(json_params['list'])
             status = 200
         except:
             json_params = {
