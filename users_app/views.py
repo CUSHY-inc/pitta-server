@@ -11,19 +11,43 @@ from .libs import lib
 
 # /users
 class Users(TemplateView):
-    # ユーザ一覧取得（作成中）
+    # ユーザ一覧取得
     def get(self,request):
-        # hoge = MgtUsersInfo.objects.get(user_id='test2')
-        # json_params = {
-        #     'message': hoge.gender.gender_id
-        # }
-        # # status = 200
-        # # hoge = settings.PITTA_ENV
-        # json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-        # return HttpResponse(str(vars(hoge.gender)), status=200) 
-        tmp = "test"
-        json_str = lib.conversion_from_camel_to_snake(tmp)
-        return HttpResponse(json_str, status=200) 
+        try:
+            if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
+                offset = int(request.GET.get('offset'))
+                limit = offset + int(request.GET.get('limit'))
+            else:
+                offset = lib.offset
+                limit = lib.limit
+            users = MgtUsersInfo.objects.all().order_by('created_at').reverse()[offset:limit]
+            json_params = []
+            for user in users:
+                json_param = {
+                    "userId": user.user_id,
+                    "email": user.email,
+                    "name": user.name,
+                    "genderId": user.gender_id,
+                    "age": user.age,
+                    "height": user.height,
+                    "weight": user.weight,
+                    "boneTypeId": user.bone_type_id,
+                    "profliePicUrl": lib.create_url(user.profile_pic),
+                    "profliePic": None,
+                    "introduction": user.introduction,
+                    "createdAt": str(user.created_at),
+                    "updatedAt": str(user.updated_at)
+                }
+                json_params.append(json_param)
+            status = 200
+        except:
+            json_params = {
+                "message": traceback.format_exc()
+            }
+            status = 400
+        finally:
+            json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
+            return HttpResponse(json_str, status=status)
 
     # ユーザ新規登録
     def post(self,request):
