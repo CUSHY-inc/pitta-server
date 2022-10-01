@@ -90,10 +90,33 @@ class MgtBrandList(models.Model):
 class MgtTemplatesInfo(models.Model):
     template_id = models.AutoField(primary_key=True)
     user = models.ForeignKey('MgtUsersInfo', models.DO_NOTHING)
-    template = models.TextField()
+    text = models.TextField()
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'mgt_templates_info'
+
+class MgtLikesInfo(models.Model):
+    like_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('MgtUsersInfo', models.DO_NOTHING, blank=True, null=True)
+    post = models.ForeignKey('MgtPostsInfo', models.DO_NOTHING)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'mgt_likes_info'
+
+class MgtCommentsInfo(models.Model):
+    comment_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('MgtUsersInfo', models.DO_NOTHING, blank=True, null=True)
+    post = models.ForeignKey('MgtPostsInfo', models.DO_NOTHING)
+    comment = models.CharField(max_length=255)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'mgt_comments_info'

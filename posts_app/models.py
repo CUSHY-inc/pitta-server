@@ -88,7 +88,8 @@ class MgtBoneTypeList(models.Model):
         db_table = 'mgt_bone_type_list'
 
 class MgtLikesInfo(models.Model):
-    user = models.ForeignKey('MgtUsersInfo', models.DO_NOTHING)
+    like_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('MgtUsersInfo', models.DO_NOTHING, blank=True, null=True)
     post = models.ForeignKey('MgtPostsInfo', models.DO_NOTHING)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
@@ -98,7 +99,8 @@ class MgtLikesInfo(models.Model):
         db_table = 'mgt_likes_info'
 
 class MgtCommentsInfo(models.Model):
-    user = models.OneToOneField('MgtUsersInfo', models.DO_NOTHING, blank=True, null=True)
+    comment_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('MgtUsersInfo', models.DO_NOTHING, blank=True, null=True)
     post = models.ForeignKey('MgtPostsInfo', models.DO_NOTHING)
     comment = models.CharField(max_length=255)
     created_at = models.DateTimeField(blank=True, null=True)

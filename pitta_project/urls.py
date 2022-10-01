@@ -18,9 +18,9 @@ from django.urls import path, include
 from .views import Default
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('masters/', include('masters_app.urls')),
-    path('users/', include('users_app.urls')),
-    path('posts/', include('posts_app.urls')),
-    path('health/', Default.as_view()),
+    path('admin', admin.site.urls),
+    path('masters', include('masters_app.urls')),
+    path('users', include('users_app.urls')),
+    path('posts', include('posts_app.urls')),
+    path('health', Default.as_view()),
 ]

@@ -4,6 +4,10 @@ import re
 import base64
 import magic
 
+# offset/limit初期値
+offset = 0
+limit = 10
+
 # S3 DL用 URL作成
 def create_url(path):
     if path is not None:

@@ -17,11 +17,11 @@ class Posts(TemplateView):
             if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
                 offset = int(request.GET.get('offset'))
                 limit = offset + int(request.GET.get('limit'))
-                posts = MgtPostsInfo.objects.all().order_by('created_at').reverse()[offset:limit]
             else:
-                posts = MgtPostsInfo.objects.all().order_by('created_at').reverse()
-            json_params = {}
-            json_params['posts'] = []
+                offset = lib.offset
+                limit = lib.limit
+            posts = MgtPostsInfo.objects.all().order_by('created_at').reverse()[offset:limit]
+            json_params = []
             for post in posts:
                 user = MgtUsersInfo.objects.get(user_id=post.user_id)
                 json_param = {
@@ -34,9 +34,14 @@ class Posts(TemplateView):
                     "description": post.description,
                     "brandId": post.brand_id,
                     "videoUrl": lib.create_url(post.video),
+                    "video": None,
                     "thumbnailUrl": lib.create_url(post.thumbnail),
+                    "thumbnail": None,
                     "sampleImageUrl": lib.create_url(post.sample_image),
+                    "sampleImage": None,
                     "pageUrl": post.page_url,
+                    "totalLikes": MgtLikesInfo.objects.filter(post_id=post.post_id).count(),
+                    "totalComments": MgtCommentsInfo.objects.filter(post_id=post.post_id).count(),
                     "user": {
                         "userId": user.user_id,
                         "email": user.email,
@@ -47,6 +52,7 @@ class Posts(TemplateView):
                         "weight": user.weight,
                         "boneTypeId": user.bone_type_id,
                         "profliePicUrl": lib.create_url(user.profile_pic),
+                        "profliePic": None,
                         "introduction": user.introduction,
                         "createdAt": str(user.created_at),
                         "updatedAt": str(user.updated_at)
@@ -54,7 +60,7 @@ class Posts(TemplateView):
                     "createdAt": str(post.created_at),
                     "updatedAt": str(post.updated_at)
                 }
-                json_params['posts'].append(json_param)
+                json_params.append(json_param)
             status = 200
         except:
             json_params = {
@@ -99,9 +105,14 @@ class Posts(TemplateView):
                 "description": post.description,
                 "brandId": post.brand_id,
                 "videoUrl": lib.create_url(post.video),
+                "video": None,
                 "thumbnailUrl": lib.create_url(post.thumbnail),
+                "thumbnail": None,
                 "sampleImageUrl": lib.create_url(post.sample_image),
+                "sampleImage": None,
                 "pageUrl": post.page_url,
+                "totalLikes": MgtLikesInfo.objects.filter(post_id=post.post_id).count(),
+                "totalComments": MgtCommentsInfo.objects.filter(post_id=post.post_id).count(),
                 "user": {
                     "userId": user.user_id,
                     "email": user.email,
@@ -112,6 +123,7 @@ class Posts(TemplateView):
                     "weight": user.weight,
                     "boneTypeId": user.bone_type_id,
                     "profliePicUrl": lib.create_url(user.profile_pic),
+                    "profliePic": None,
                     "introduction": user.introduction,
                     "createdAt": str(user.created_at),
                     "updatedAt": str(user.updated_at)
@@ -149,9 +161,14 @@ class PostId(TemplateView):
                     "description": post.description,
                     "brandId": post.brand_id,
                     "videoUrl": lib.create_url(post.video),
+                    "video": None,
                     "thumbnailUrl": lib.create_url(post.thumbnail),
+                    "thumbnail": None,
                     "sampleImageUrl": lib.create_url(post.sample_image),
+                    "sampleImage": None,
                     "pageUrl": post.page_url,
+                    "totalLikes": MgtLikesInfo.objects.filter(post_id=post.post_id).count(),
+                    "totalComments": MgtCommentsInfo.objects.filter(post_id=post.post_id).count(),
                     "user": {
                         "userId": user.user_id,
                         "email": user.email,
@@ -162,6 +179,7 @@ class PostId(TemplateView):
                         "weight": user.weight,
                         "boneTypeId": user.bone_type_id,
                         "profliePicUrl": lib.create_url(user.profile_pic),
+                        "profliePic": None,
                         "introduction": user.introduction,
                         "createdAt": str(user.created_at),
                         "updatedAt": str(user.updated_at)
@@ -217,30 +235,27 @@ class Likes(TemplateView):
         try:
             post_id = kwargs['parameter']
             if MgtPostsInfo.objects.filter(post_id=post_id).exists():
-                user_id = request.GET.get('userId')
                 if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
                     offset = int(request.GET.get('offset'))
                     limit = offset + int(request.GET.get('limit'))
-                    if user_id is None:
-                        likes = MgtLikesInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[offset:limit]
-                    else:
-                        likes = MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()[offset:limit]
                 else:
-                    if user_id is None:
-                        likes = MgtLikesInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()
-                    else:
-                        likes = MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()
-                json_params = {}
-                json_params['likes'] = []
+                    offset = lib.offset
+                    limit = lib.limit
+                user_id = request.GET.get('userId')
+                if user_id is None:
+                    likes = MgtLikesInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[offset:limit]
+                else:
+                    likes = MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()[offset:limit]
+                json_params = []
                 for like in likes:
                     json_param = {
-                        "id": str(like.id),
+                        "likeId": str(like.like_id),
                         "userId": like.user_id,
                         "postId": like.post_id,
                         "createdAt": str(like.created_at),
                         "updatedAt": str(like.updated_at)
                     }
-                    json_params['likes'].append(json_param)
+                    json_params.append(json_param)
                 status = 200
             else:
                 json_params = {
@@ -328,38 +343,35 @@ class Comments(TemplateView):
     def get(self, request, **kwargs):
         try:
             post_id = kwargs['parameter']
-            if not MgtPostsInfo.objects.filter(post_id=post_id).exists():
-                json_params = {
-                    "message": "post not exist"
-                }
-                status = 404
-            else:
-                user_id = request.GET.get('userId')
+            if MgtPostsInfo.objects.filter(post_id=post_id).exists():
                 if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
                     offset = int(request.GET.get('offset'))
                     limit = offset + int(request.GET.get('limit'))
-                    if user_id is None:
-                        comments = MgtCommentsInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[offset:limit]
-                    else:
-                        comments = MgtCommentsInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()[offset:limit]
                 else:
-                    if user_id is None:
-                        comments = MgtCommentsInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()
-                    else:
-                        comments = MgtCommentsInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()
-                json_params = {}
-                json_params['comments'] = []
+                    offset = lib.offset
+                    limit = lib.limit
+                user_id = request.GET.get('userId')
+                if user_id is None:
+                    comments = MgtCommentsInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[offset:limit]
+                else:
+                    comments = MgtCommentsInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()[offset:limit]
+                json_params = []
                 for comment in comments:
                     json_param = {
-                        "id": str(comment.id),
+                        "commentId": str(comment.comment_id),
                         "userId": comment.user_id,
                         "postId": comment.post_id,
                         "comment": comment.comment,
                         "createdAt": str(comment.created_at),
                         "updatedAt": str(comment.updated_at)
                     }
-                    json_params['comments'].append(json_param)
+                    json_params.append(json_param)
                 status = 200
+            else:
+                json_params = {
+                    "message": "post not exist"
+                }
+                status = 404
         except:
             json_params = {
                 "message": traceback.format_exc()

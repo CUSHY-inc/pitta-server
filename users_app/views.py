@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 from django.http import HttpResponse
-from .models import MgtUsersInfo, MgtPostsInfo, MgtTemplatesInfo
+from .models import MgtUsersInfo, MgtPostsInfo, MgtTemplatesInfo, MgtLikesInfo, MgtCommentsInfo
 from django.conf import settings
 from django.db.models import Q
 import os
@@ -21,7 +21,7 @@ class Users(TemplateView):
         # # hoge = settings.PITTA_ENV
         # json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
         # return HttpResponse(str(vars(hoge.gender)), status=200) 
-        tmp = "boneTypeId"
+        tmp = "test"
         json_str = lib.conversion_from_camel_to_snake(tmp)
         return HttpResponse(json_str, status=200) 
 
@@ -34,7 +34,18 @@ class Users(TemplateView):
             user = MgtUsersInfo.objects.create(user_id=data['userId'], email=data['email'], created_at=dt_now, updated_at=dt_now)
             json_params = {
                 "userId": user.user_id,
-                "email": user.email
+                "email": user.email,
+                "name": None,
+                "genderId": None,
+                "age": None,
+                "height": None,
+                "weight": None,
+                "boneTypeId": None,
+                "profilePicUrl": None,
+                "profilePic": None,
+                "introduction": None,
+                "createdAt": str(user.created_at),
+                "updatedAt": str(user.updated_at)
             }
             status = 200
         except:
@@ -65,6 +76,7 @@ class UserId(TemplateView):
                     "weight": user.weight,
                     "boneTypeId": user.bone_type_id,
                     "profliePicUrl": lib.create_url(user.profile_pic),
+                    "profliePic": None,
                     "introduction": user.introduction,
                     "createdAt": str(user.created_at),
                     "updatedAt": str(user.updated_at)
@@ -130,6 +142,7 @@ class UserId(TemplateView):
                     "weight": user.weight,
                     "boneTypeId": user.bone_type_id,
                     "profliePicUrl": lib.create_url(user.profile_pic),
+                    "profliePic": None,
                     "introduction": user.introduction,
                     "createdAt": str(user.created_at),
                     "updatedAt": str(user.updated_at)
@@ -186,11 +199,11 @@ class UserIdPosts(TemplateView):
                 if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
                     offset = int(request.GET.get('offset'))
                     limit = offset + int(request.GET.get('limit'))
-                    posts = MgtPostsInfo.objects.filter(user_id=user_id).order_by('created_at').reverse()[offset:limit]
                 else:
-                    posts = MgtPostsInfo.objects.filter(user_id=user_id).order_by('created_at').reverse()
-                json_params = {}
-                json_params['posts'] = []
+                    offset = lib.offset
+                    limit = lib.limit
+                posts = MgtPostsInfo.objects.filter(user_id=user_id).order_by('created_at').reverse()[offset:limit]
+                json_params = []
                 for post in posts:
                     json_param = {
                         "postId": str(post.post_id),
@@ -202,9 +215,14 @@ class UserIdPosts(TemplateView):
                         "description": post.description,
                         "brandId": post.brand_id,
                         "videoUrl": lib.create_url(post.video),
+                        "video": None,
                         "thumbnailUrl": lib.create_url(post.thumbnail),
+                        "thumbnail": None,
                         "sampleImageUrl": lib.create_url(post.sample_image),
+                        "sampleImage": None,
                         "pageUrl": post.page_url,
+                        "totalLikes": MgtLikesInfo.objects.filter(post_id=post.post_id).count(),
+                        "totalComments": MgtCommentsInfo.objects.filter(post_id=post.post_id).count(),
                         "user": {
                             "userId": user.user_id,
                             "email": user.email,
@@ -215,6 +233,7 @@ class UserIdPosts(TemplateView):
                             "weight": user.weight,
                             "boneTypeId": user.bone_type_id,
                             "profliePicUrl": lib.create_url(user.profile_pic),
+                            "profliePic": None,
                             "introduction": user.introduction,
                             "createdAt": str(user.created_at),
                             "updatedAt": str(user.updated_at)
@@ -222,7 +241,7 @@ class UserIdPosts(TemplateView):
                         "createdAt": str(post.created_at),
                         "updatedAt": str(post.updated_at)
                     }
-                    json_params['posts'].append(json_param)
+                    json_params.append(json_param)
                 status = 200
             else:
                 json_params = {
@@ -250,20 +269,20 @@ class UserIdTemplates(TemplateView):
                 if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
                     offset = int(request.GET.get('offset'))
                     limit = offset + int(request.GET.get('limit'))
-                    templates = MgtTemplatesInfo.objects.filter(user_id=user_id).order_by('created_at').reverse()[offset:limit]
                 else:
-                    templates = MgtTemplatesInfo.objects.filter(user_id=user_id).order_by('created_at').reverse()
-                json_params = {}
-                json_params['templates'] = []
+                    offset = lib.offset
+                    limit = lib.limit  
+                templates = MgtTemplatesInfo.objects.filter(user_id=user_id).order_by('created_at').reverse()[offset:limit]
+                json_params = []
                 for template in templates:
                     json_param = {
                         "templateId": template.template_id,
                         "userId": template.user_id,
-                        "template": template.template,
+                        "text": template.text,
                         "createdAt": str(template.created_at),
                         "updatedAt": str(template.updated_at)
                     }
-                    json_params['templates'].append(json_param)
+                    json_params.append(json_param)
                 status = 200
             else:
                 json_params = {
