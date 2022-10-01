@@ -99,7 +99,7 @@ class TemplateId(TemplateView):
                 status = 404
             else:
                 template = MgtTemplatesInfo.objects.get(template_id=template_id)
-                template.delete()                
+                template.delete()
                 status = 204
         except:
             json_params = {
