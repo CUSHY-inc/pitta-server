@@ -53,21 +53,44 @@ class Users(TemplateView):
     def post(self,request):
         try:
             data = json.loads(request.body)
+            # ユーザ作成
             dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
             dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
             user = MgtUsersInfo.objects.create(user_id=data['userId'], email=data['email'], created_at=dt_now, updated_at=dt_now)
+            # user_id/email以外の情報もあれば更新する
+            for key, value in data.items():
+                if key == "name" and value is not None:
+                    user.name = value if len(str(value)) != 0 else None
+                elif key == "genderId" and value is not None:
+                    user.gender_id = value if len(str(value)) != 0 else None
+                elif key == "age" and value is not None:
+                    user.age = value if len(str(value)) != 0 else None
+                elif key == "height" and value is not None:
+                    user.height = value if len(str(value)) != 0 else None
+                elif key == "weight" and value is not None:
+                    user.weight = value if len(str(value)) != 0 else None
+                elif key == "boneTypeId" and value is not None:
+                    user.bone_type_id = value if len(str(value)) != 0 else None
+                elif key == "profilePic" and value is not None:
+                    if len(str(value)) != 0:
+                        user.profile_pic = lib.decode_and_storage(value, 'pictures/profile_pics', user.user_id)
+                    else:
+                        user.profile_pic = None
+                elif key == "introduction" and value is not None:
+                    user.introduction = value if len(str(value)) != 0 else None
+            user.save()
             json_params = {
                 "userId": user.user_id,
                 "email": user.email,
-                "name": None,
-                "genderId": None,
-                "age": None,
-                "height": None,
-                "weight": None,
-                "boneTypeId": None,
-                "profilePicUrl": None,
-                "profilePic": None,
-                "introduction": None,
+                "name": user.name,
+                "genderId": user.gender_id,
+                "age": user.age,
+                "height": user.height,
+                "weight": user.weight,
+                "boneTypeId": user.bone_type_id,
+                "profliePicUrl": lib.create_url(user.profile_pic),
+                "profliePic": None,
+                "introduction": user.introduction,
                 "createdAt": str(user.created_at),
                 "updatedAt": str(user.updated_at)
             }
