@@ -75,63 +75,71 @@ class Posts(TemplateView):
     def post(self,request):
         try:
             data = json.loads(request.body)
+            user_id = data['user']['userId']
             post_id = uuid.uuid4()
 
-            # base64で送られてきたデータをデコードしてS3に格納
-            if data['video'] is not None:
-                video = lib.decode_and_storage(data['video'], 'videos/posts', post_id)
+            if MgtUsersInfo.objects.filter(user_id=user_id).exists():
+
+                # base64で送られてきたデータをデコードしてS3に格納
+                if data['video'] is not None:
+                    video = lib.decode_and_storage(data['video'], 'videos/posts', post_id)
+                else:
+                    video = None
+                if data['thumbnail'] is not None:
+                    thumbnail = lib.decode_and_storage(data['thumbnail'], 'pictures/thumbnails', post_id)
+                else:
+                    thumbnail = None
+                if data['sampleImage'] is not None:
+                    sample_image = lib.decode_and_storage(data['sampleImage'], 'pictures/sample_images', post_id)
+                else:
+                    sample_image = None
+
+                dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+                dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
+                post = MgtPostsInfo.objects.create(post_id=post_id, item_id=data['itemId'], item_name=data['itemName'], size_id=data['sizeId'], color_id=data['colorId'], category_id=data['categoryId'], description=data['description'], brand_id=data['brandId'], video=video, thumbnail=thumbnail, sample_image=sample_image, page_url=data['pageUrl'], user_id=user_id, created_at=dt_now, updated_at=dt_now)
+                user = MgtUsersInfo.objects.get(user_id=user_id)
+                json_params = {
+                    "postId": str(post.post_id),
+                    "itemId": post.item_id,
+                    "itemName": post.item_name,
+                    "sizeId": post.size_id,
+                    "colorId": post.color_id,
+                    "categoryId": post.category_id,
+                    "description": post.description,
+                    "brandId": post.brand_id,
+                    "videoUrl": lib.create_url(post.video),
+                    "video": None,
+                    "thumbnailUrl": lib.create_url(post.thumbnail),
+                    "thumbnail": None,
+                    "sampleImageUrl": lib.create_url(post.sample_image),
+                    "sampleImage": None,
+                    "pageUrl": post.page_url,
+                    "totalLikes": MgtLikesInfo.objects.filter(post_id=post.post_id).count(),
+                    "totalComments": MgtCommentsInfo.objects.filter(post_id=post.post_id).count(),
+                    "user": {
+                        "userId": user.user_id,
+                        "email": user.email,
+                        "name": user.name,
+                        "genderId": user.gender_id,
+                        "age": user.age,
+                        "height": user.height,
+                        "weight": user.weight,
+                        "boneTypeId": user.bone_type_id,
+                        "profliePicUrl": lib.create_url(user.profile_pic),
+                        "profliePic": None,
+                        "introduction": user.introduction,
+                        "createdAt": str(user.created_at),
+                        "updatedAt": str(user.updated_at)
+                    },
+                    "createdAt": str(post.created_at),
+                    "updatedAt": str(post.updated_at)
+                }
+                status = 200
             else:
-                video = None
-            if data['thumbnail'] is not None:
-                thumbnail = lib.decode_and_storage(data['thumbnail'], 'pictures/thumbnails', post_id)
-            else:
-                thumbnail = None
-            if data['sampleImage'] is not None:
-                sample_image = lib.decode_and_storage(data['sampleImage'], 'pictures/sample_images', post_id)
-            else:
-                sample_image = None
-            
-            dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
-            dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
-            post = MgtPostsInfo.objects.create(post_id=post_id, item_id=data['itemId'], item_name=data['itemName'], size_id=data['sizeId'], color_id=data['colorId'], category_id=data['categoryId'], description=data['description'], brand_id=data['brandId'], video=video, thumbnail=thumbnail, sample_image=sample_image, page_url=data['pageUrl'], user_id=data['userId'], created_at=dt_now, updated_at=dt_now)
-            user = MgtUsersInfo.objects.get(user_id=data['userId'])
-            json_params = {
-                "postId": str(post.post_id),
-                "itemId": post.item_id,
-                "itemName": post.item_name,
-                "sizeId": post.size_id,
-                "colorId": post.color_id,
-                "categoryId": post.category_id,
-                "description": post.description,
-                "brandId": post.brand_id,
-                "videoUrl": lib.create_url(post.video),
-                "video": None,
-                "thumbnailUrl": lib.create_url(post.thumbnail),
-                "thumbnail": None,
-                "sampleImageUrl": lib.create_url(post.sample_image),
-                "sampleImage": None,
-                "pageUrl": post.page_url,
-                "totalLikes": MgtLikesInfo.objects.filter(post_id=post.post_id).count(),
-                "totalComments": MgtCommentsInfo.objects.filter(post_id=post.post_id).count(),
-                "user": {
-                    "userId": user.user_id,
-                    "email": user.email,
-                    "name": user.name,
-                    "genderId": user.gender_id,
-                    "age": user.age,
-                    "height": user.height,
-                    "weight": user.weight,
-                    "boneTypeId": user.bone_type_id,
-                    "profliePicUrl": lib.create_url(user.profile_pic),
-                    "profliePic": None,
-                    "introduction": user.introduction,
-                    "createdAt": str(user.created_at),
-                    "updatedAt": str(user.updated_at)
-                },
-                "createdAt": str(post.created_at),
-                "updatedAt": str(post.updated_at)
-            }
-            status = 200
+                json_params = {
+                    "message": "user not exist"
+                }
+                status = 404
         except:
             json_params = {
                 "message": traceback.format_exc()
