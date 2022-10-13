@@ -41,7 +41,7 @@ class Templates(TemplateView):
             status = 400
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status)
+            return HttpResponse(json_str, status=status, content_type="application/json")
 
 # /templates/templateId
 class TemplateId(TemplateView):
@@ -86,7 +86,7 @@ class TemplateId(TemplateView):
             status = 400
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status)
+            return HttpResponse(json_str, status=status, content_type="application/json")
 
     # ユーザテンプレート削除
     def delete(self, request, **kwargs):
@@ -108,9 +108,9 @@ class TemplateId(TemplateView):
             status = 400
         finally:
             if status == 204:
-                return HttpResponse(status=status)
+                return HttpResponse(status=status, content_type="application/json")
             else:
                 json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-                return HttpResponse(json_str, status=status)
+                return HttpResponse(json_str, status=status, content_type="application/json")
 
 

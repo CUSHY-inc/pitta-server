@@ -25,7 +25,7 @@ class GenderList(TemplateView):
             status = 400
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status)
+            return HttpResponse(json_str, status=status, content_type="application/json")
 
 # /masters/boneTypeList
 class BoneTypeList(TemplateView):
@@ -48,7 +48,7 @@ class BoneTypeList(TemplateView):
             status = 400
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status)
+            return HttpResponse(json_str, status=status, content_type="application/json")
 
 # /masters/sizeList
 class SizeList(TemplateView):
@@ -71,7 +71,7 @@ class SizeList(TemplateView):
             status = 400
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status)
+            return HttpResponse(json_str, status=status, content_type="application/json")
 
 # /masters/colorList
 class ColorList(TemplateView):
@@ -94,7 +94,7 @@ class ColorList(TemplateView):
             status = 400
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status)
+            return HttpResponse(json_str, status=status, content_type="application/json")
 
 # /masters/categoryList
 class CategoryList(TemplateView):
@@ -117,7 +117,7 @@ class CategoryList(TemplateView):
             status = 400
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status)
+            return HttpResponse(json_str, status=status, content_type="application/json")
 
 # /masters/brandList
 class BrandList(TemplateView):
@@ -140,4 +140,4 @@ class BrandList(TemplateView):
             status = 400
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status)
+            return HttpResponse(json_str, status=status, content_type="application/json")

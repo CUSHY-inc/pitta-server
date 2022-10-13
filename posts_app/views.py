@@ -69,7 +69,7 @@ class Posts(TemplateView):
             status = 400
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status)
+            return HttpResponse(json_str, status=status, content_type="application/json")
 
     # 新規投稿
     def post(self,request):
@@ -147,7 +147,7 @@ class Posts(TemplateView):
             status = 400
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status)
+            return HttpResponse(json_str, status=status, content_type="application/json")
 
 # /posts/postId
 class PostId(TemplateView):
@@ -208,7 +208,7 @@ class PostId(TemplateView):
             status = 400
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status)
+            return HttpResponse(json_str, status=status, content_type="application/json")
 
     # 投稿削除
     def delete(self, request, **kwargs):
@@ -230,10 +230,10 @@ class PostId(TemplateView):
             status = 400
         finally:
             if status == 204:
-                return HttpResponse(status=status)
+                return HttpResponse(status=status, content_type="application/json")
             else:
                 json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-                return HttpResponse(json_str, status=status)
+                return HttpResponse(json_str, status=status, content_type="application/json")
 
 # /posts/postId/likes
 class Likes(TemplateView):
@@ -277,7 +277,7 @@ class Likes(TemplateView):
             status = 400
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status)
+            return HttpResponse(json_str, status=status, content_type="application/json")
 
 # /posts/postId/comments
 class Comments(TemplateView):
@@ -322,4 +322,4 @@ class Comments(TemplateView):
             status = 400
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status)
+            return HttpResponse(json_str, status=status, content_type="application/json")
