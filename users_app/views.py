@@ -104,6 +104,72 @@ class Users(TemplateView):
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
             return HttpResponse(json_str, status=status, content_type="application/json")
 
+    # ユーザ情報更新
+    def put(self, request, **kwargs):
+        try:
+            data = json.loads(request.body)
+            user_id = data['userId']
+            if MgtUsersInfo.objects.filter(user_id=user_id).exists():
+                user = MgtUsersInfo.objects.get(user_id=user_id)
+
+                # リクエスト内容を元にユーザ情報を更新する
+                for key, value in data.items():
+                    if key == "email" and value is not None:
+                        user.email = value if len(str(value)) != 0 else None
+                    elif key == "name" and value is not None:
+                        user.name = value if len(str(value)) != 0 else None
+                    elif key == "genderId" and value is not None:
+                        user.gender_id = value if len(str(value)) != 0 else None
+                    elif key == "age" and value is not None:
+                        user.age = value if len(str(value)) != 0 else None
+                    elif key == "height" and value is not None:
+                        user.height = value if len(str(value)) != 0 else None
+                    elif key == "weight" and value is not None:
+                        user.weight = value if len(str(value)) != 0 else None
+                    elif key == "boneTypeId" and value is not None:
+                        user.bone_type_id = value if len(str(value)) != 0 else None
+                    elif key == "profilePic" and value is not None:
+                        if len(str(value)) != 0:
+                            user.profile_pic = lib.decode_and_storage(value, 'pictures/profile_pics', user.user_id)
+                        else:
+                            user.profile_pic = None
+                    elif key == "introduction" and value is not None:
+                        user.introduction = value if len(str(value)) != 0 else None
+
+                dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+                dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
+                user.updated_at = dt_now
+                user.save()
+                json_params = {
+                    "userId": user.user_id,
+                    "email": user.email,
+                    "name": user.name,
+                    "genderId": user.gender_id,
+                    "age": user.age,
+                    "height": user.height,
+                    "weight": user.weight,
+                    "boneTypeId": user.bone_type_id,
+                    "profliePicUrl": lib.create_url(user.profile_pic),
+                    "profliePic": None,
+                    "introduction": user.introduction,
+                    "createdAt": str(user.created_at),
+                    "updatedAt": str(user.updated_at)
+                }
+                status = 200
+            else:
+                json_params = {
+                    "message": "user not exist"
+                }
+                status = 404
+        except:
+            json_params = {
+                "message": traceback.format_exc()
+            }
+            status = 400
+        finally:
+            json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
+            return HttpResponse(json_str, status=status, content_type="application/json")
+
 # /users/<userId>
 class UserId(TemplateView):
 
@@ -132,72 +198,6 @@ class UserId(TemplateView):
             else:
                 json_params = {
                     "message": "user not exist",
-                }
-                status = 404
-        except:
-            json_params = {
-                "message": traceback.format_exc()
-            }
-            status = 400
-        finally:
-            json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
-            return HttpResponse(json_str, status=status, content_type="application/json")
-
-    # ユーザ情報更新
-    def put(self, request, **kwargs):
-        try:
-            user_id = kwargs['parameter']
-            if MgtUsersInfo.objects.filter(user_id=user_id).exists():
-                user = MgtUsersInfo.objects.get(user_id=user_id)
-                data = json.loads(request.body)
-
-                # リクエスト内容を元にユーザ情報を更新する
-                for key, value in data.items():
-                    if key == "email" and value is not None:
-                        user.email = value if len(str(value)) != 0 else None
-                    elif key == "name" and value is not None:
-                        user.name = value if len(str(value)) != 0 else None
-                    elif key == "genderId" and value is not None:
-                        user.gender_id = value if len(str(value)) != 0 else None
-                    elif key == "age" and value is not None:
-                        user.age = value if len(str(value)) != 0 else None
-                    elif key == "height" and value is not None:
-                        user.height = value if len(str(value)) != 0 else None
-                    elif key == "weight" and value is not None:
-                        user.weight = value if len(str(value)) != 0 else None
-                    elif key == "boneTypeId" and value is not None:
-                        user.bone_type_id = value if len(str(value)) != 0 else None
-                    elif key == "profilePic" and value is not None:
-                        if len(str(value)) != 0:
-                            user.profile_pic = lib.decode_and_storage(value, 'pictures/profile_pics', user.user_id)
-                        else:
-                            user.profile_pic = None
-                    elif key == "introduction" and value is not None:
-                        user.introduction = value if len(str(value)) != 0 else None
-                
-                dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
-                dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
-                user.updated_at = dt_now
-                user.save()
-                json_params = {
-                    "userId": user.user_id,
-                    "email": user.email,
-                    "name": user.name,
-                    "genderId": user.gender_id,
-                    "age": user.age,
-                    "height": user.height,
-                    "weight": user.weight,
-                    "boneTypeId": user.bone_type_id,
-                    "profliePicUrl": lib.create_url(user.profile_pic),
-                    "profliePic": None,
-                    "introduction": user.introduction,
-                    "createdAt": str(user.created_at),
-                    "updatedAt": str(user.updated_at)
-                }
-                status = 200
-            else:
-                json_params = {
-                    "message": "user not exist"
                 }
                 status = 404
         except:

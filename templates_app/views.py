@@ -43,14 +43,11 @@ class Templates(TemplateView):
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
             return HttpResponse(json_str, status=status, content_type="application/json")
 
-# /templates/templateId
-class TemplateId(TemplateView):
-
     # ユーザテンプレート更新
     def put(self, request, **kwargs):
         try:
-            template_id = kwargs['parameter']
             data = json.loads(request.body)
+            template_id = data['templateId']
             user_id = data['userId']
             if not MgtUsersInfo.objects.filter(user_id=user_id).exists():
                 json_params = {
@@ -87,6 +84,9 @@ class TemplateId(TemplateView):
         finally:
             json_str = json.dumps(json_params, ensure_ascii=False, indent=2)
             return HttpResponse(json_str, status=status, content_type="application/json")
+
+# /templates/templateId
+class TemplateId(TemplateView):
 
     # ユーザテンプレート削除
     def delete(self, request, **kwargs):
