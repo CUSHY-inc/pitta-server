@@ -216,6 +216,7 @@ class UserId(TemplateView):
             if MgtUsersInfo.objects.filter(user_id=user_id).exists():
                 user = MgtUsersInfo.objects.get(user_id=user_id)
                 user.delete()
+                lib.delete_file('pictures/profile_pics', user_id)
                 status = 204
             else:
                 json_params = {

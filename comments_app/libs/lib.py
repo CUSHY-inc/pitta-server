@@ -3,6 +3,8 @@ import boto3
 import re
 import base64
 import magic
+import os
+import glob
 
 # offset/limit初期値
 offset = 0
@@ -38,3 +40,8 @@ def decode_and_storage(file_data, s3_path, file_name):
     with open('/mnt/goofys/{0}/{1}.{2}'.format(s3_path, file_name, extension), 'wb') as f:
         f.write(file)
     return '{0}/{1}.{2}'.format(s3_path, file_name, extension)
+
+# ファイル削除
+def delete_file(s3_path, regexp):
+    for file_name in glob.glob('/mnt/goofys/{0}/{1}*'.format(s3_path, regexp)):
+        os.remove(file_name)

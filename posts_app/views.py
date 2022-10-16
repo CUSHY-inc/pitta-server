@@ -217,6 +217,8 @@ class PostId(TemplateView):
             if MgtPostsInfo.objects.filter(post_id=post_id).exists():
                 post = MgtPostsInfo.objects.get(post_id=post_id)
                 post.delete()
+                lib.delete_file('pictures/thumbnails', post_id)
+                lib.delete_file('videos/posts', post_id)
                 status = 204
             else:
                 json_params = {
