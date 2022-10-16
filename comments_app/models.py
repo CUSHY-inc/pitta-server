@@ -11,7 +11,7 @@ class MgtPostsInfo(models.Model):
     brand = models.ForeignKey('MgtBrandList', models.DO_NOTHING, blank=True, null=True)
     video = models.TextField()
     thumbnail = models.TextField()
-    sample_image = models.TextField(blank=True, null=True)
+    sample_image_url = models.TextField(blank=True, null=True)
     page_url = models.TextField(blank=True, null=True)
     user = models.ForeignKey('MgtUsersInfo', models.DO_NOTHING)
     created_at = models.DateTimeField(blank=True, null=True)

@@ -37,8 +37,7 @@ class Posts(TemplateView):
                     "video": None,
                     "thumbnailUrl": lib.create_url(post.thumbnail),
                     "thumbnail": None,
-                    "sampleImageUrl": lib.create_url(post.sample_image),
-                    "sampleImage": None,
+                    "sampleImageUrl": post.sample_image_url,
                     "pageUrl": post.page_url,
                     "totalLikes": MgtLikesInfo.objects.filter(post_id=post.post_id).count(),
                     "totalComments": MgtCommentsInfo.objects.filter(post_id=post.post_id).count(),
@@ -89,14 +88,10 @@ class Posts(TemplateView):
                     thumbnail = lib.decode_and_storage(data['thumbnail'], 'pictures/thumbnails', post_id)
                 else:
                     thumbnail = None
-                if data['sampleImage'] is not None:
-                    sample_image = lib.decode_and_storage(data['sampleImage'], 'pictures/sample_images', post_id)
-                else:
-                    sample_image = None
 
                 dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
                 dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
-                post = MgtPostsInfo.objects.create(post_id=post_id, item_id=data['itemId'], item_name=data['itemName'], size_id=data['sizeId'], color_id=data['colorId'], category_id=data['categoryId'], description=data['description'], brand_id=data['brandId'], video=video, thumbnail=thumbnail, sample_image=sample_image, page_url=data['pageUrl'], user_id=user_id, created_at=dt_now, updated_at=dt_now)
+                post = MgtPostsInfo.objects.create(post_id=post_id, item_id=data['itemId'], item_name=data['itemName'], size_id=data['sizeId'], color_id=data['colorId'], category_id=data['categoryId'], description=data['description'], brand_id=data['brandId'], video=video, thumbnail=thumbnail, sample_image_url=data['sampleImageUrl'], page_url=data['pageUrl'], user_id=user_id, created_at=dt_now, updated_at=dt_now)
                 user = MgtUsersInfo.objects.get(user_id=user_id)
                 json_params = {
                     "postId": str(post.post_id),
@@ -111,8 +106,7 @@ class Posts(TemplateView):
                     "video": None,
                     "thumbnailUrl": lib.create_url(post.thumbnail),
                     "thumbnail": None,
-                    "sampleImageUrl": lib.create_url(post.sample_image),
-                    "sampleImage": None,
+                    "sampleImageUrl": post.sample_image_url,
                     "pageUrl": post.page_url,
                     "totalLikes": MgtLikesInfo.objects.filter(post_id=post.post_id).count(),
                     "totalComments": MgtCommentsInfo.objects.filter(post_id=post.post_id).count(),
@@ -172,8 +166,7 @@ class PostId(TemplateView):
                     "video": None,
                     "thumbnailUrl": lib.create_url(post.thumbnail),
                     "thumbnail": None,
-                    "sampleImageUrl": lib.create_url(post.sample_image),
-                    "sampleImage": None,
+                    "sampleImageUrl": post.sample_image_url,
                     "pageUrl": post.page_url,
                     "totalLikes": MgtLikesInfo.objects.filter(post_id=post.post_id).count(),
                     "totalComments": MgtCommentsInfo.objects.filter(post_id=post.post_id).count(),
