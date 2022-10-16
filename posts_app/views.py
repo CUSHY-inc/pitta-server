@@ -51,8 +51,8 @@ class Posts(TemplateView):
                         "height": user.height,
                         "weight": user.weight,
                         "boneTypeId": user.bone_type_id,
-                        "profliePicUrl": lib.create_url(user.profile_pic),
-                        "profliePic": None,
+                        "profilePicUrl": lib.create_url(user.profile_pic),
+                        "profilePic": None,
                         "introduction": user.introduction,
                         "createdAt": str(user.created_at),
                         "updatedAt": str(user.updated_at)
@@ -125,8 +125,8 @@ class Posts(TemplateView):
                         "height": user.height,
                         "weight": user.weight,
                         "boneTypeId": user.bone_type_id,
-                        "profliePicUrl": lib.create_url(user.profile_pic),
-                        "profliePic": None,
+                        "profilePicUrl": lib.create_url(user.profile_pic),
+                        "profilePic": None,
                         "introduction": user.introduction,
                         "createdAt": str(user.created_at),
                         "updatedAt": str(user.updated_at)
@@ -186,8 +186,8 @@ class PostId(TemplateView):
                         "height": user.height,
                         "weight": user.weight,
                         "boneTypeId": user.bone_type_id,
-                        "profliePicUrl": lib.create_url(user.profile_pic),
-                        "profliePic": None,
+                        "profilePicUrl": lib.create_url(user.profile_pic),
+                        "profilePic": None,
                         "introduction": user.introduction,
                         "createdAt": str(user.created_at),
                         "updatedAt": str(user.updated_at)
@@ -300,11 +300,26 @@ class Comments(TemplateView):
                     comments = MgtCommentsInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()[offset:limit]
                 json_params = []
                 for comment in comments:
+                    user = MgtUsersInfo.objects.get(user_id=comment.user_id)
                     json_param = {
                         "commentId": str(comment.comment_id),
-                        "userId": str(comment.user_id),
                         "postId": str(comment.post_id),
                         "comment": comment.comment,
+                        "user": {
+                            "userId": user.user_id,
+                            "email": user.email,
+                            "name": user.name,
+                            "genderId": user.gender_id,
+                            "age": user.age,
+                            "height": user.height,
+                            "weight": user.weight,
+                            "boneTypeId": user.bone_type_id,
+                            "profilePicUrl": lib.create_url(user.profile_pic),
+                            "profilePic": None,
+                            "introduction": user.introduction,
+                            "createdAt": str(user.created_at),
+                            "updatedAt": str(user.updated_at)
+                        },
                         "createdAt": str(comment.created_at),
                         "updatedAt": str(comment.updated_at)
                     }

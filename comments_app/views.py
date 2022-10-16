@@ -6,6 +6,7 @@ import datetime
 import json
 import uuid
 import traceback
+from .libs import lib
 
 # /comments
 class Comments(TemplateView):
@@ -14,7 +15,7 @@ class Comments(TemplateView):
     def post(self, request, **kwargs):
         try:
             data = json.loads(request.body)
-            user_id = data['userId']
+            user_id = data['user']['userId']
             post_id = data['postId']
             comment = data['comment']
             if not MgtPostsInfo.objects.filter(post_id=post_id).exists():
@@ -30,12 +31,27 @@ class Comments(TemplateView):
             else:
                 dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
                 dt_now = dt_now.strftime('%Y-%m-%d %H:%M:%S')
+                user = MgtUsersInfo.objects.get(user_id=user_id)
                 comment = MgtCommentsInfo.objects.create(user_id=user_id, post_id=post_id, comment=comment, created_at=dt_now, updated_at=dt_now)
                 json_params = {
                     "commentId": str(comment.comment_id),
-                    "userId": str(comment.user_id),
                     "postId": str(comment.post_id),
                     "comment": comment.comment,
+                    "user": {
+                        "userId": user.user_id,
+                        "email": user.email,
+                        "name": user.name,
+                        "genderId": user.gender_id,
+                        "age": user.age,
+                        "height": user.height,
+                        "weight": user.weight,
+                        "boneTypeId": user.bone_type_id,
+                        "profilePicUrl": lib.create_url(user.profile_pic),
+                        "profilePic": None,
+                        "introduction": user.introduction,
+                        "createdAt": str(user.created_at),
+                        "updatedAt": str(user.updated_at)
+                    },
                     "createdAt": str(comment.created_at),
                     "updatedAt": str(comment.updated_at)
                 }
