@@ -1,10 +1,13 @@
+from wsgiref import headers
 from django.conf import settings
+from botocore.client import Config
 import boto3
 import re
 import base64
 import magic
 import os
 import glob
+import mimetypes
 
 # offset/limit初期値
 offset = 0
@@ -21,7 +24,8 @@ def create_url(path):
                 url = s3_client.generate_presigned_url(
                     'get_object',
                     Params={'Bucket': BUCKET, 'Key': OBJECT},
-                    ExpiresIn=300)
+                    ExpiresIn=300
+                    )
                 return url
             except:
                 return None
@@ -39,6 +43,13 @@ def decode_and_storage(file_data, s3_path, file_name):
     extension = re.findall('^.*/(.*)$', file_type)[0]
     with open('/mnt/goofys/{0}/{1}.{2}'.format(s3_path, file_name, extension), 'wb') as f:
         f.write(file)
+    s3_client = boto3.client('s3')
+    FILE = '/mnt/goofys/{0}/{1}.{2}'.format(s3_path, file_name, extension)
+    BUCKET = settings.PITTA_ENV
+    KEY = '{0}/{1}.{2}'.format(s3_path, file_name, extension)
+    CONTENT_TYPE = mimetypes.guess_type(FILE)[0]
+    s3_client.upload_file(FILE, BUCKET, KEY, ExtraArgs={"ContentType": CONTENT_TYPE})
+
     return '{0}/{1}.{2}'.format(s3_path, file_name, extension)
 
 # ファイル削除
