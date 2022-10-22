@@ -268,8 +268,6 @@ class Posts(TemplateView):
                         "thumbnail": None,
                         "sampleImageUrl": post.sample_image_url,
                         "pageUrl": post.page_url,
-                        "totalLikes": MgtLikesInfo.objects.filter(post_id=post.post_id).count(),
-                        "totalComments": MgtCommentsInfo.objects.filter(post_id=post.post_id).count(),
                         "user": {
                             "userId": user.user_id,
                             "email": user.email,

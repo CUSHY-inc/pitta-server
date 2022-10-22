@@ -39,8 +39,6 @@ class Posts(TemplateView):
                     "thumbnail": None,
                     "sampleImageUrl": post.sample_image_url,
                     "pageUrl": post.page_url,
-                    "totalLikes": MgtLikesInfo.objects.filter(post_id=post.post_id).count(),
-                    "totalComments": MgtCommentsInfo.objects.filter(post_id=post.post_id).count(),
                     "user": {
                         "userId": user.user_id,
                         "email": user.email,
@@ -108,8 +106,6 @@ class Posts(TemplateView):
                     "thumbnail": None,
                     "sampleImageUrl": post.sample_image_url,
                     "pageUrl": post.page_url,
-                    "totalLikes": MgtLikesInfo.objects.filter(post_id=post.post_id).count(),
-                    "totalComments": MgtCommentsInfo.objects.filter(post_id=post.post_id).count(),
                     "user": {
                         "userId": user.user_id,
                         "email": user.email,
@@ -168,8 +164,6 @@ class PostId(TemplateView):
                     "thumbnail": None,
                     "sampleImageUrl": post.sample_image_url,
                     "pageUrl": post.page_url,
-                    "totalLikes": MgtLikesInfo.objects.filter(post_id=post.post_id).count(),
-                    "totalComments": MgtCommentsInfo.objects.filter(post_id=post.post_id).count(),
                     "user": {
                         "userId": user.user_id,
                         "email": user.email,
@@ -249,7 +243,10 @@ class Likes(TemplateView):
                     likes = MgtLikesInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[offset:limit]
                 else:
                     likes = MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()[offset:limit]
-                json_params = []
+                json_params = {
+                    "totalLikes": MgtLikesInfo.objects.filter(post_id=post_id).count(),
+                    "likes": []
+                }
                 for like in likes:
                     json_param = {
                         "likeId": str(like.like_id),
@@ -258,7 +255,7 @@ class Likes(TemplateView):
                         "createdAt": str(like.created_at),
                         "updatedAt": str(like.updated_at)
                     }
-                    json_params.append(json_param)
+                    json_params['likes'].append(json_param)
                 status = 200
             else:
                 json_params = {
@@ -293,7 +290,10 @@ class Comments(TemplateView):
                     comments = MgtCommentsInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[offset:limit]
                 else:
                     comments = MgtCommentsInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()[offset:limit]
-                json_params = []
+                json_params = {
+                    "totalComments": MgtCommentsInfo.objects.filter(post_id=post_id).count(),
+                    "comments": []
+                }
                 for comment in comments:
                     user = MgtUsersInfo.objects.get(user_id=comment.user_id)
                     json_param = {
@@ -318,7 +318,7 @@ class Comments(TemplateView):
                         "createdAt": str(comment.created_at),
                         "updatedAt": str(comment.updated_at)
                     }
-                    json_params.append(json_param)
+                    json_params['comments'].append(json_param)
                 status = 200
             else:
                 json_params = {
