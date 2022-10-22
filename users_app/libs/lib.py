@@ -30,13 +30,13 @@ def create_url(path):
     if path is not None:
         if len(str(path)) != 0:
             try:
-                s3_client = boto3.client('s3')
+                s3_client = boto3.client('s3', config=Config(signature_version='s3v4'))
                 BUCKET = settings.PITTA_ENV
                 OBJECT = path
                 url = s3_client.generate_presigned_url(
                     'get_object',
                     Params={'Bucket': BUCKET, 'Key': OBJECT},
-                    ExpiresIn=300
+                    ExpiresIn=604800
                     )
                 return url
             except:
