@@ -14,13 +14,8 @@ class Posts(TemplateView):
     # 投稿一覧取得
     def get(self,request):
         try:
-            if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
-                offset = int(request.GET.get('offset'))
-                limit = offset + int(request.GET.get('limit'))
-            else:
-                offset = lib.offset
-                limit = lib.limit
-            posts = MgtPostsInfo.objects.all().order_by('created_at').reverse()[offset:limit]
+            ofs_lim = lib.OffsetLimit(request.GET.get('offset'), request.GET.get('limit'))
+            posts = MgtPostsInfo.objects.all().order_by('created_at').reverse()[ofs_lim.offset:ofs_lim.limit]
             json_params = []
             for post in posts:
                 user = MgtUsersInfo.objects.get(user_id=post.user_id)
@@ -232,17 +227,12 @@ class Likes(TemplateView):
         try:
             post_id = kwargs['parameter']
             if MgtPostsInfo.objects.filter(post_id=post_id).exists():
-                if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
-                    offset = int(request.GET.get('offset'))
-                    limit = offset + int(request.GET.get('limit'))
-                else:
-                    offset = lib.offset
-                    limit = lib.limit
+                ofs_lim = lib.OffsetLimit(request.GET.get('offset'), request.GET.get('limit'))
                 user_id = request.GET.get('userId')
                 if user_id is None:
-                    likes = MgtLikesInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[offset:limit]
+                    likes = MgtLikesInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[ofs_lim.offset:ofs_lim.limit]
                 else:
-                    likes = MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()[offset:limit]
+                    likes = MgtLikesInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()[ofs_lim.offset:ofs_lim.limit]
                 json_params = {
                     "totalLikes": MgtLikesInfo.objects.filter(post_id=post_id).count(),
                     "likes": []
@@ -279,17 +269,12 @@ class Comments(TemplateView):
         try:
             post_id = kwargs['parameter']
             if MgtPostsInfo.objects.filter(post_id=post_id).exists():
-                if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
-                    offset = int(request.GET.get('offset'))
-                    limit = offset + int(request.GET.get('limit'))
-                else:
-                    offset = lib.offset
-                    limit = lib.limit
+                ofs_lim = lib.OffsetLimit(request.GET.get('offset'), request.GET.get('limit'))
                 user_id = request.GET.get('userId')
                 if user_id is None:
-                    comments = MgtCommentsInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[offset:limit]
+                    comments = MgtCommentsInfo.objects.filter(post_id=post_id).order_by('created_at').reverse()[ofs_lim.offset:ofs_lim.limit]
                 else:
-                    comments = MgtCommentsInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()[offset:limit]
+                    comments = MgtCommentsInfo.objects.filter(Q(post_id=post_id) & Q(user_id=user_id)).order_by('created_at').reverse()[ofs_lim.offset:ofs_lim.limit]
                 json_params = {
                     "totalComments": MgtCommentsInfo.objects.filter(post_id=post_id).count(),
                     "comments": []

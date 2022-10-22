@@ -9,9 +9,21 @@ import os
 import glob
 import mimetypes
 
-# offset/limit初期値
-offset = 0
-limit = 10
+######### クラス定義 #########
+
+# offset/limitクラス
+class OffsetLimit:
+    def __init__(self,offset,limit):
+        if offset is not None:
+            self.offset = int(offset)
+        else:
+            self.offset = 0
+        if limit is not None:
+            self.limit = self.offset + int(limit)
+        else:
+            self.limit = self.offset + 10
+
+######### 関数定義 #########
 
 # S3 DL用 URL作成
 def create_url(path):

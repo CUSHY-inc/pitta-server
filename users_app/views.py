@@ -14,13 +14,8 @@ class Users(TemplateView):
     # ユーザ一覧取得
     def get(self,request):
         try:
-            if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
-                offset = int(request.GET.get('offset'))
-                limit = offset + int(request.GET.get('limit'))
-            else:
-                offset = lib.offset
-                limit = lib.limit
-            users = MgtUsersInfo.objects.all().order_by('created_at').reverse()[offset:limit]
+            ofs_lim = lib.OffsetLimit(request.GET.get('offset'), request.GET.get('limit'))
+            users = MgtUsersInfo.objects.all().order_by('created_at').reverse()[ofs_lim.offset:ofs_lim.limit]
             json_params = []
             for user in users:
                 json_param = {
@@ -244,13 +239,8 @@ class Posts(TemplateView):
             user_id = kwargs['parameter']
             if MgtUsersInfo.objects.filter(user_id=user_id).exists():
                 user = MgtUsersInfo.objects.get(user_id=user_id)
-                if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
-                    offset = int(request.GET.get('offset'))
-                    limit = offset + int(request.GET.get('limit'))
-                else:
-                    offset = lib.offset
-                    limit = lib.limit
-                posts = MgtPostsInfo.objects.filter(user_id=user_id).order_by('created_at').reverse()[offset:limit]
+                ofs_lim = lib.OffsetLimit(request.GET.get('offset'), request.GET.get('limit'))
+                posts = MgtPostsInfo.objects.filter(user_id=user_id).order_by('created_at').reverse()[ofs_lim.offset:ofs_lim.limit]
                 json_params = []
                 for post in posts:
                     json_param = {
@@ -310,14 +300,8 @@ class Templates(TemplateView):
         try:
             user_id = kwargs['parameter']
             if MgtUsersInfo.objects.filter(user_id=user_id).exists():
-                user = MgtUsersInfo.objects.get(user_id=user_id)
-                if request.GET.get('offset') is not None and request.GET.get('limit') is not None:
-                    offset = int(request.GET.get('offset'))
-                    limit = offset + int(request.GET.get('limit'))
-                else:
-                    offset = lib.offset
-                    limit = lib.limit  
-                templates = MgtTemplatesInfo.objects.filter(user_id=user_id).order_by('created_at').reverse()[offset:limit]
+                ofs_lim = lib.OffsetLimit(request.GET.get('offset'), request.GET.get('limit'))
+                templates = MgtTemplatesInfo.objects.filter(user_id=user_id).order_by('created_at').reverse()[ofs_lim.offset:ofs_lim.limit]
                 json_params = []
                 for template in templates:
                     json_param = {
