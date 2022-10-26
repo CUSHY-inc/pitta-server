@@ -305,7 +305,7 @@ class Templates(TemplateView):
                 json_params = []
                 for template in templates:
                     json_param = {
-                        "templateId": template.template_id,
+                        "templateId": str(template.template_id),
                         "userId": template.user_id,
                         "text": template.text,
                         "createdAt": str(template.created_at),
